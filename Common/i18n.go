@@ -512,7 +512,7 @@ var i18nMap = map[string]map[string]string{
 
 	"flag_no_poc": {
 		LangZH: "禁用POC扫描",
-		LangEN: "Disable POC scanning",
+		LangEN: "Enable POC scanning",
 		LangJA: "POCスキャンを無効にする",
 		LangRU: "Отключить POC-сканирование",
 	},
