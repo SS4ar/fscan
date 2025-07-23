@@ -53,19 +53,19 @@ func (s *Scanner) selectStrategy(info Common.HostInfo) {
 	switch {
 	case Common.LocalMode:
 		s.strategy = NewLocalScanStrategy()
-		Common.LogBase("已选择本地扫描模式")
+		Common.LogBase("Local scan mode selected")
 	case len(Common.URLs) > 0:
 		s.strategy = NewWebScanStrategy()
-		Common.LogBase("已选择Web扫描模式")
+		Common.LogBase("Web scan mode selected")
 	default:
 		s.strategy = NewServiceScanStrategy()
-		Common.LogBase("已选择服务扫描模式")
+		Common.LogBase("Service scan mode selected")
 	}
 }
 
 // Scan 执行整体扫描流程
 func (s *Scanner) Scan(info Common.HostInfo) {
-	Common.LogBase("开始信息扫描")
+	Common.LogBase("Start scanning for information")
 	lib.Inithttp()
 
 	// 并发控制初始化
@@ -86,7 +86,7 @@ func (s *Scanner) finishScan() {
 		Common.ProgressBar.Finish()
 		fmt.Println()
 	}
-	Common.LogBase(fmt.Sprintf("扫描已完成: %v/%v", Common.End, Common.Num))
+	Common.LogBase(fmt.Sprintf("Scan completed: %v/%v", Common.End, Common.Num))
 }
 
 // 任务执行通用框架
@@ -152,10 +152,10 @@ func logScanPlan(tasks []ScanTask) {
 
 	// 构建扫描计划信息
 	var planInfo strings.Builder
-	planInfo.WriteString("扫描计划:\n")
+	planInfo.WriteString("Scan plan:\n")
 
 	for plugin, count := range pluginCounts {
-		planInfo.WriteString(fmt.Sprintf("  - %s: %d 个目标\n", plugin, count))
+		planInfo.WriteString(fmt.Sprintf("  - %s: %d targets\n", plugin, count))
 	}
 
 	Common.LogBase(planInfo.String())
@@ -167,7 +167,7 @@ func initProgressBar(totalTasks int) {
 		progressbar.OptionEnableColorCodes(true),
 		progressbar.OptionShowCount(),
 		progressbar.OptionSetWidth(15),
-		progressbar.OptionSetDescription("[cyan]扫描进度:[reset]"),
+		progressbar.OptionSetDescription("[cyan]Scan progress:[reset]"),
 		progressbar.OptionSetTheme(progressbar.Theme{
 			Saucer:        "[green]=[reset]",
 			SaucerHead:    "[green]>[reset]",
@@ -192,14 +192,14 @@ func scheduleScanTask(pluginName string, target Common.HostInfo, ch *chan struct
 		defer func() {
 			// 捕获并记录任何可能的panic
 			if r := recover(); r != nil {
-				Common.LogError(fmt.Sprintf("[PANIC] 插件 %s 扫描 %s:%s 时崩溃: %v",
+				Common.LogError(fmt.Sprintf("[PANIC] Plugin %s scan on %s:%s crashed: %v",
 					pluginName, target.Host, target.Ports, r))
 			}
 
 			// 完成任务，释放资源
 			duration := time.Since(startTime)
 			if Common.ShowScanPlan {
-				Common.LogBase(fmt.Sprintf("完成 %s 扫描 %s:%s (耗时: %.2fs)",
+				Common.LogBase(fmt.Sprintf("Finished %s scan on %s:%s (Duration: %.2fs)",
 					pluginName, target.Host, target.Ports, duration.Seconds()))
 			}
 
@@ -217,12 +217,12 @@ func scheduleScanTask(pluginName string, target Common.HostInfo, ch *chan struct
 func executeSingleScan(pluginName string, info Common.HostInfo) {
 	plugin, exists := Common.PluginManager[pluginName]
 	if !exists {
-		Common.LogBase(fmt.Sprintf("扫描类型 %v 无对应插件，已跳过", pluginName))
+		Common.LogBase(fmt.Sprintf("Scan type %v has no corresponding plugin, skipped", pluginName))
 		return
 	}
 
 	if err := plugin.ScanFunc(&info); err != nil {
-		Common.LogError(fmt.Sprintf("扫描错误 %v:%v - %v", info.Host, info.Ports, err))
+		Common.LogError(fmt.Sprintf("Scan error %v:%v - %v", info.Host, info.Ports, err))
 	}
 }
 

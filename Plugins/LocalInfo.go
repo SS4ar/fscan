@@ -92,7 +92,7 @@ var (
 
 // LocalInfoScan 本地信息收集主函数
 func LocalInfoScan(info *Common.HostInfo) (err error) {
-	Common.LogBase("开始本地信息收集...")
+	Common.LogBase("Starting local information collection...")
 
 	// 获取用户主目录
 	home, err := os.UserHomeDir()
@@ -107,7 +107,7 @@ func LocalInfoScan(info *Common.HostInfo) (err error) {
 	// 根据规则搜索敏感文件
 	searchSensitiveFiles()
 
-	Common.LogBase("本地信息收集完成")
+	Common.LogBase("Local information collection completed")
 	return nil
 }
 

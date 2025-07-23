@@ -66,12 +66,12 @@ type ProtocolResult struct {
 // WebTitle 获取Web标题和指纹信息
 func WebTitle(info *Common.HostInfo) error {
 	if info == nil {
-		return fmt.Errorf("主机信息为空")
+		return fmt.Errorf("Host information is empty")
 	}
 
 	// 初始化Url
 	if err := initializeUrl(info); err != nil {
-		Common.LogError(fmt.Sprintf("初始化Url失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to initialize URL: %v", err))
 		return err
 	}
 
@@ -79,7 +79,7 @@ func WebTitle(info *Common.HostInfo) error {
 	checkData, err := fetchWebInfo(info)
 	if err != nil {
 		// 记录错误但继续处理可能获取的数据
-		Common.LogError(fmt.Sprintf("获取网站信息失败: %s %v", info.Url, err))
+		Common.LogError(fmt.Sprintf("Failed to get website information: %s %v", info.Url, err))
 	}
 
 	// 分析指纹
@@ -89,7 +89,7 @@ func WebTitle(info *Common.HostInfo) error {
 		// 检查是否为打印机，避免意外打印
 		for _, v := range info.Infostr {
 			if v == printerFingerPrint {
-				Common.LogBase("检测到打印机，停止扫描")
+				Common.LogBase("Printer detected, stopping scan")
 				return nil
 			}
 		}
@@ -395,15 +395,15 @@ func saveWebResult(info *Common.HostInfo, resp *WebResponse) {
 	Common.SaveResult(result)
 
 	// 输出控制台日志
-	logMsg := fmt.Sprintf("网站标题 %-25v 状态码:%-3v 长度:%-6v 标题:%v",
+	logMsg := fmt.Sprintf("Web title %-25v Status code:%-3v Length:%-6v Title:%v",
 		resp.Url, resp.StatusCode, resp.Length, resp.Title)
 
 	if resp.RedirectUrl != "" {
-		logMsg += fmt.Sprintf(" 重定向地址: %s", resp.RedirectUrl)
+		logMsg += fmt.Sprintf(" Redirect URL: %s", resp.RedirectUrl)
 	}
 
 	if len(fingerprints) > 0 {
-		logMsg += fmt.Sprintf(" 指纹:%v", fingerprints)
+		logMsg += fmt.Sprintf(" Fingerprints:%v", fingerprints)
 	}
 
 	Common.LogInfo(logMsg)

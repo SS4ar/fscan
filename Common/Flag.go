@@ -116,7 +116,7 @@ func Flag(Info *HostInfo) {
 	flag.BoolVar(&PocFull, "full", false, GetText("flag_poc_full"))
 	flag.BoolVar(&DnsLog, "dns", false, GetText("flag_dns_log"))
 	flag.IntVar(&PocNum, "num", 20, GetText("flag_poc_num"))
-	flag.BoolVar(&DisablePocScan, "nopoc", false, GetText("flag_no_poc"))
+	flag.BoolVar(&EnablePocScan, "poc", false, GetText("flag_no_poc"))
 
 	// ═════════════════════════════════════════════════
 	// Redis利用参数
@@ -151,7 +151,7 @@ func Flag(Info *HostInfo) {
 	// 其他参数
 	// ═════════════════════════════════════════════════
 	flag.StringVar(&Shellcode, "sc", "", GetText("flag_shellcode"))
-	flag.StringVar(&Language, "lang", "zh", GetText("flag_language"))
+	flag.StringVar(&Language, "lang", "en", GetText("flag_language"))
 	flag.StringVar(&ApiAddr, "api", "", GetText("flag_api"))
 	flag.StringVar(&SecretKey, "secret", "", GetText("flag_api_key"))
 	// 解析命令行参数
@@ -217,7 +217,7 @@ func FlagFromRemote(info *HostInfo, argString string) error {
 	fs.BoolVar(&PocFull, "full", false, GetText("flag_poc_full"))
 	fs.BoolVar(&DnsLog, "dns", false, GetText("flag_dns_log"))
 	fs.IntVar(&PocNum, "num", 20, GetText("flag_poc_num"))
-	fs.BoolVar(&DisablePocScan, "nopoc", false, GetText("flag_no_poc"))
+	fs.BoolVar(&EnablePocScan, "poc", false, GetText("flag_no_poc"))
 
 	fs.StringVar(&RedisFile, "rf", "", GetText("flag_redis_file"))
 	fs.StringVar(&RedisShell, "rs", "", GetText("flag_redis_shell"))
@@ -240,7 +240,7 @@ func FlagFromRemote(info *HostInfo, argString string) error {
 	fs.BoolVar(&SlowLogOutput, "slow", false, GetText("flag_slow_log_output"))
 
 	fs.StringVar(&Shellcode, "sc", "", GetText("flag_shellcode"))
-	fs.StringVar(&Language, "lang", "zh", GetText("flag_language"))
+	fs.StringVar(&Language, "lang", "en", GetText("flag_language"))
 
 	// 开始解析远程传入的参数
 	if err := fs.Parse(args); err != nil {

@@ -18,7 +18,7 @@ func EnhancedPortScan(hosts []string, ports string, timeout int64) []string {
 	// 解析端口和排除端口
 	portList := Common.ParsePort(ports)
 	if len(portList) == 0 {
-		Common.LogError("无效端口: " + ports)
+		Common.LogError("Invalid port: " + ports)
 		return nil
 	}
 
@@ -63,7 +63,7 @@ func EnhancedPortScan(hosts []string, ports string, timeout int64) []string {
 				// 记录开放端口
 				atomic.AddInt64(&count, 1)
 				aliveMap.Store(addr, struct{}{})
-				Common.LogInfo("端口开放 " + addr)
+				Common.LogInfo("Open port " + addr)
 				Common.SaveResult(&Common.ScanResult{
 					Time: time.Now(), Type: Common.PORT, Target: host,
 					Status: "open", Details: map[string]interface{}{"port": port},
@@ -146,6 +146,6 @@ func EnhancedPortScan(hosts []string, ports string, timeout int64) []string {
 		return true
 	})
 
-	Common.LogBase(fmt.Sprintf("扫描完成, 发现 %d 个开放端口", count))
+	Common.LogBase(fmt.Sprintf("Scan completed, found %d open ports", count))
 	return aliveAddrs
 }

@@ -927,12 +927,12 @@ var (
 	// POC配置
 	PocPath        string  // POC脚本路径
 	Pocinfo        PocInfo // POC详细信息结构
-	DisablePocScan bool    //nopoc
+	EnablePocScan bool //nopoc, default to true to disable POC scans
 
 	// Redis利用
 	RedisFile         string // Redis利用目标文件
 	RedisShell        string // Redis反弹Shell命令
-	DisableRedis      bool   // 是否禁用Redis利用测试
+	DisableRedis      bool   = true // 是否禁用Redis利用测试，默认禁用
 	RedisWritePath    string // Redis文件写入路径
 	RedisWriteContent string // Redis文件写入内容
 	RedisWriteFile    string // Redis写入的源文件

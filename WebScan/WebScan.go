@@ -49,19 +49,19 @@ func WebScan(info *Common.HostInfo) {
 
 	// 验证输入
 	if info == nil {
-		Common.LogError("无效的扫描目标")
+		Common.LogError("Invalid scan target")
 		return
 	}
 
 	if len(allPocs) == 0 {
-		Common.LogError("POC加载失败，无法执行扫描")
+		Common.LogError("POC loading failed, unable to perform scan")
 		return
 	}
 
 	// 构建目标URL
 	target, err := buildTargetURL(info)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("构建目标URL失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to build target URL: %v", err))
 		return
 	}
 
@@ -192,7 +192,7 @@ func initPocs() {
 func loadEmbeddedPocs() {
 	entries, err := pocsFS.ReadDir("pocs")
 	if err != nil {
-		Common.LogError(fmt.Sprintf("加载内置POC目录失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to load built-in POC directory: %v", err))
 		return
 	}
 
@@ -211,7 +211,7 @@ func loadEmbeddedPocs() {
 // loadExternalPocs 从外部路径加载POC
 func loadExternalPocs(pocPath string) {
 	if !directoryExists(pocPath) {
-		Common.LogError(fmt.Sprintf("POC目录不存在: %s", pocPath))
+		Common.LogError(fmt.Sprintf("POC directory does not exist: %s", pocPath))
 		return
 	}
 
@@ -229,7 +229,7 @@ func loadExternalPocs(pocPath string) {
 	})
 
 	if err != nil {
-		Common.LogError(fmt.Sprintf("遍历POC目录失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to traverse POC directory: %v", err))
 		return
 	}
 
@@ -287,7 +287,7 @@ func loadPocsConcurrently(pocFiles []string, isEmbedded bool, pocPath string) {
 	}
 
 	wg.Wait()
-	Common.LogBase(fmt.Sprintf("POC加载完成: 总共%d个，成功%d个，失败%d个",
+	Common.LogBase(fmt.Sprintf("POC loading completed: total %d, success %d, failure %d",
 		pocCount, successCount, failCount))
 }
 

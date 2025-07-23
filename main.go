@@ -21,7 +21,7 @@ func main() {
 
 	// 初始化输出系统，如果失败则直接退出
 	if err := Common.InitOutput(); err != nil {
-		Common.LogError(fmt.Sprintf("初始化输出系统失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to initialize output system: %v", err))
 		os.Exit(1)
 	}
 	defer Common.CloseOutput()
