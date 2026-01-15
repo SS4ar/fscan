@@ -15,15 +15,15 @@ import (
 func Parse(Info *HostInfo) error {
 	// 按照依赖顺序解析各类配置
 	if err := ParseUser(); err != nil {
-		return fmt.Errorf("用户名解析错误: %v", err)
+		return fmt.Errorf("username parse error: %v", err)
 	}
 
 	if err := ParsePass(Info); err != nil {
-		return fmt.Errorf("密码与目标解析错误: %v", err)
+		return fmt.Errorf("password/target parse error: %v", err)
 	}
 
 	if err := ParseInput(Info); err != nil {
-		return fmt.Errorf("输入参数解析错误: %v", err)
+		return fmt.Errorf("input argument parse error: %v", err)
 	}
 
 	return nil
@@ -50,7 +50,7 @@ func ParseUser() error {
 	if UsersFile != "" {
 		fileUsers, err := ReadFileLines(UsersFile)
 		if err != nil {
-			return fmt.Errorf("读取用户名文件失败: %v", err)
+			return fmt.Errorf("failed to read username file: %v", err)
 		}
 
 		// 添加非空用户名
@@ -120,7 +120,7 @@ func parsePasswords() {
 	if PasswordsFile != "" {
 		passes, err := ReadFileLines(PasswordsFile)
 		if err != nil {
-			LogError(fmt.Sprintf("读取密码文件失败: %v", err))
+			LogError(fmt.Sprintf("Failed to read password file: %v", err))
 			return
 		}
 
@@ -144,7 +144,7 @@ func parseHashes() {
 
 	hashes, err := ReadFileLines(HashFile)
 	if err != nil {
-		LogError(fmt.Sprintf("读取哈希文件失败: %v", err))
+		LogError(fmt.Sprintf("Failed to read hash file: %v", err))
 		return
 	}
 
@@ -183,7 +183,7 @@ func parseURLs() {
 	if URLsFile != "" {
 		urls, err := ReadFileLines(URLsFile)
 		if err != nil {
-			LogError(fmt.Sprintf("读取URL文件失败: %v", err))
+			LogError(fmt.Sprintf("Failed to read URL file: %v", err))
 			return
 		}
 
@@ -215,7 +215,7 @@ func parseHosts(Info *HostInfo) error {
 
 	hosts, err := ReadFileLines(HostsFile)
 	if err != nil {
-		return fmt.Errorf("读取主机文件失败: %v", err)
+		return fmt.Errorf("Failed to read host file: %v", err)
 	}
 
 	// 去重处理
@@ -256,7 +256,7 @@ func parsePorts() error {
 
 	ports, err := ReadFileLines(PortsFile)
 	if err != nil {
-		return fmt.Errorf("读取端口文件失败: %v", err)
+		return fmt.Errorf("failed to read ports file: %v", err)
 	}
 
 	// 构建端口列表字符串

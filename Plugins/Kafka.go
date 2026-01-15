@@ -42,7 +42,7 @@ func KafkaScan(info *Common.HostInfo) error {
 
 	if unauthResult.Success {
 		// 无认证访问成功
-		Common.LogSuccess(fmt.Sprintf("Kafka服务 %s 无需认证即可访问", target))
+		Common.LogSuccess(fmt.Sprintf("Kafka %s unauthenticated access", target))
 
 		// 保存无认证访问结果
 		result := &Common.ScanResult{
@@ -93,7 +93,7 @@ func KafkaScan(info *Common.HostInfo) error {
 			},
 		}
 		Common.SaveResult(vulnResult)
-		Common.LogSuccess(fmt.Sprintf("Kafka服务 %s 爆破成功 用户名: %s 密码: %s",
+		Common.LogSuccess(fmt.Sprintf("Kafka %s brute force success. User: %s Password: %s",
 			target, result.Credential.Username, result.Credential.Password))
 		return nil
 	}
@@ -261,7 +261,7 @@ func tryKafkaCredential(ctx context.Context, info *Common.HostInfo, credential K
 			lastErr = err
 			if err != nil {
 				// 记录错误
-				Common.LogError(fmt.Sprintf("Kafka尝试失败 用户名: %s 密码: %s 错误: %v",
+				Common.LogError(fmt.Sprintf("Kafka attempt failed. User: %s Password: %s Error: %v",
 					credential.Username, credential.Password, err))
 
 				// 检查是否需要重试

@@ -62,7 +62,7 @@ func CheckMultiPoc(req *http.Request, pocs []*Poc, workers int) {
 
 				// 处理执行过程中的错误
 				if err != nil {
-					Common.LogError(fmt.Sprintf("执行POC错误 %s: %v", task.Poc.Name, err))
+					Common.LogError(fmt.Sprintf("POC execution error %s: %v", task.Poc.Name, err))
 					continue
 				}
 
@@ -100,24 +100,24 @@ func CheckMultiPoc(req *http.Request, pocs []*Poc, workers int) {
 					Common.SaveResult(result)
 
 					// 构造控制台输出的日志信息
-					logMsg := fmt.Sprintf("目标: %s\n  漏洞类型: %s\n  漏洞名称: %s\n  详细信息:",
+					logMsg := fmt.Sprintf("Target: %s\n  Vulnerability Type: %s\n  Vulnerability Name: %s\n  Details:",
 						task.Req.URL,
 						task.Poc.Name,
 						vulName)
 
 					// 添加作者信息到日志
 					if task.Poc.Detail.Author != "" {
-						logMsg += "\n\t作者:" + task.Poc.Detail.Author
+						logMsg += "\n\tAuthor: " + task.Poc.Detail.Author
 					}
 
 					// 添加参考链接到日志
 					if len(task.Poc.Detail.Links) != 0 {
-						logMsg += "\n\t参考链接:" + strings.Join(task.Poc.Detail.Links, "\n")
+						logMsg += "\n\tReferences: " + strings.Join(task.Poc.Detail.Links, "\n")
 					}
 
 					// 添加描述信息到日志
 					if task.Poc.Detail.Description != "" {
-						logMsg += "\n\t描述:" + task.Poc.Detail.Description
+						logMsg += "\n\tDescription: " + task.Poc.Detail.Description
 					}
 
 					// 输出成功日志
@@ -168,24 +168,24 @@ func createVulnDetails(poc *Poc, vulName string) map[string]interface{} {
 
 // buildLogMessage 构建漏洞日志消息
 func buildLogMessage(result *VulnResult) string {
-	logMsg := fmt.Sprintf("目标: %s\n  漏洞类型: %s\n  漏洞名称: %s\n  详细信息:",
+logMsg := fmt.Sprintf("Target: %s\n  Vulnerability Type: %s\n  Vulnerability Name: %s\n  Details:",
 		result.Target,
 		result.Poc.Name,
 		result.VulName)
 
 	// 添加作者信息到日志
 	if result.Poc.Detail.Author != "" {
-		logMsg += "\n\t作者:" + result.Poc.Detail.Author
+	logMsg += "\n\tAuthor: " + result.Poc.Detail.Author
 	}
 
 	// 添加参考链接到日志
 	if len(result.Poc.Detail.Links) != 0 {
-		logMsg += "\n\t参考链接:" + strings.Join(result.Poc.Detail.Links, "\n")
+	logMsg += "\n\tReferences: " + strings.Join(result.Poc.Detail.Links, "\n")
 	}
 
 	// 添加描述信息到日志
 	if result.Poc.Detail.Description != "" {
-		logMsg += "\n\t描述:" + result.Poc.Detail.Description
+	logMsg += "\n\tDescription: " + result.Poc.Detail.Description
 	}
 
 	return logMsg
@@ -213,13 +213,13 @@ func executePoc(oReq *http.Request, p *Poc) (bool, error, string) {
 	// 创建执行环境
 	env, err := NewEnv(&config)
 	if err != nil {
-		return false, fmt.Errorf("执行环境错误 %s: %v", p.Name, err), ""
+		return false, fmt.Errorf("execution environment error %s: %v", p.Name, err), ""
 	}
 
 	// 解析请求
 	req, err := ParseRequest(oReq)
 	if err != nil {
-		return false, fmt.Errorf("请求解析错误 %s: %v", p.Name, err), ""
+		return false, fmt.Errorf("request parse error %s: %v", p.Name, err), ""
 	}
 
 	// 初始化变量映射
@@ -238,7 +238,7 @@ func executePoc(oReq *http.Request, p *Poc) (bool, error, string) {
 			continue
 		}
 		if err, _ = evalset(env, variableMap, key, expression); err != nil {
-			Common.LogError(fmt.Sprintf("设置项执行错误 %s: %v", p.Name, err))
+			Common.LogError(fmt.Sprintf("Set item execution error %s: %v", p.Name, err))
 		}
 	}
 
@@ -291,7 +291,7 @@ func executeRules(oReq *http.Request, p *Poc, variableMap map[string]interface{}
 			strings.NewReader(rule.Body),
 		)
 		if err != nil {
-			return false, fmt.Errorf("请求创建错误: %v", err)
+			return false, fmt.Errorf("request creation error: %v", err)
 		}
 
 		// 设置请求头
@@ -367,7 +367,7 @@ func doSearch(re string, body string) map[string]string {
 	r, err := regexp.Compile(re)
 	// 正则表达式编译
 	if err != nil {
-		Common.LogError(fmt.Sprintf("正则编译错误: %v", err))
+		Common.LogError(fmt.Sprintf("Regex compile error: %v", err))
 		return nil
 	}
 
@@ -444,7 +444,7 @@ func newReverse() *Reverse {
 	u, err := url.Parse(urlStr)
 	// 解析反连URL
 	if err != nil {
-		Common.LogError(fmt.Sprintf("反连URL解析错误: %v", err))
+		Common.LogError(fmt.Sprintf("Reverse URL parse error: %v", err))
 		return &Reverse{}
 	}
 
@@ -508,9 +508,9 @@ func clusterpoc(oReq *http.Request, p *Poc, variableMap map[string]interface{}, 
 		// 生成日志消息
 		var logMsg string
 		if p.Name == "poc-yaml-backup-file" || p.Name == "poc-yaml-sql-file" {
-			logMsg = fmt.Sprintf("检测到漏洞 %s %s", targetURL, p.Name)
+			logMsg = fmt.Sprintf("Vulnerability detected %s %s", targetURL, p.Name)
 		} else {
-			logMsg = fmt.Sprintf("检测到漏洞 %s %s 参数:%v", targetURL, p.Name, params)
+			logMsg = fmt.Sprintf("Vulnerability detected %s %s params:%v", targetURL, p.Name, params)
 		}
 
 		// 输出成功日志
@@ -771,7 +771,7 @@ func clustersend(oReq *http.Request, variableMap map[string]interface{}, req *Re
 	reqURL := fmt.Sprintf("%s://%s%s", req.Url.Scheme, req.Url.Host, req.Url.Path)
 	newRequest, err := http.NewRequest(rule.Method, reqURL, strings.NewReader(rule.Body))
 	if err != nil {
-		return false, fmt.Errorf("HTTP请求错误: %v", err)
+		return false, fmt.Errorf("HTTP request error: %v", err)
 	}
 	defer func() { newRequest = nil }()
 
@@ -784,7 +784,7 @@ func clustersend(oReq *http.Request, variableMap map[string]interface{}, req *Re
 	// 发送请求
 	resp, err := DoRequest(newRequest, rule.FollowRedirects)
 	if err != nil {
-		return false, fmt.Errorf("请求发送错误: %v", err)
+		return false, fmt.Errorf("request send error: %v", err)
 	}
 
 	// 更新响应到变量映射
@@ -809,7 +809,7 @@ func clustersend(oReq *http.Request, variableMap map[string]interface{}, req *Re
 	out, err := Evaluate(env, rule.Expression, variableMap)
 	if err != nil {
 		if strings.Contains(err.Error(), "Syntax error") {
-			Common.LogError(fmt.Sprintf("CEL语法错误 [%s]: %v", rule.Expression, err))
+			Common.LogError(fmt.Sprintf("CEL syntax error [%s]: %v", rule.Expression, err))
 		}
 		return false, err
 	}

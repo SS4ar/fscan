@@ -39,19 +39,19 @@ func Evaluate(env *cel.Env, expression string, params map[string]interface{}) (r
 	// 编译表达式
 	ast, issues := env.Compile(expression)
 	if issues.Err() != nil {
-		return nil, fmt.Errorf("表达式编译错误: %w", issues.Err())
+		return nil, fmt.Errorf("expression compile error: %w", issues.Err())
 	}
 
 	// 创建程序
 	program, err := env.Program(ast)
 	if err != nil {
-		return nil, fmt.Errorf("程序创建错误: %w", err)
+		return nil, fmt.Errorf("program creation error: %w", err)
 	}
 
 	// 执行评估
 	result, _, err := program.Eval(params)
 	if err != nil {
-		return nil, fmt.Errorf("表达式评估错误: %w", err)
+		return nil, fmt.Errorf("expression evaluation error: %w", err)
 	}
 
 	return result, nil
@@ -687,14 +687,14 @@ func DoRequest(req *http.Request, redirect bool) (*Response, error) {
 	}
 
 	if err != nil {
-		return nil, fmt.Errorf("请求执行失败: %w", err)
+		return nil, fmt.Errorf("request execution failed: %w", err)
 	}
 	defer oResp.Body.Close()
 
 	// 解析响应
 	resp, err := ParseResponse(oResp)
 	if err != nil {
-		Common.LogError("响应解析失败: " + err.Error())
+			Common.LogError("Response parse failed: " + err.Error())
 	}
 
 	return resp, err
@@ -731,7 +731,7 @@ func ParseRequest(oReq *http.Request) (*Request, error) {
 	if oReq.Body != nil && oReq.Body != http.NoBody {
 		data, err := io.ReadAll(oReq.Body)
 		if err != nil {
-			return nil, fmt.Errorf("读取请求体失败: %w", err)
+			return nil, fmt.Errorf("failed to read request body: %w", err)
 		}
 		req.Body = data
 		// 重新设置请求体，允许后续重复读取
@@ -758,7 +758,7 @@ func ParseResponse(oResp *http.Response) (*Response, error) {
 	// 读取并解析响应体
 	body, err := getRespBody(oResp)
 	if err != nil {
-		return nil, fmt.Errorf("处理响应体失败: %w", err)
+		return nil, fmt.Errorf("failed to process response body: %w", err)
 	}
 	resp.Body = body
 

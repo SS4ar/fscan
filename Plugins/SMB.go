@@ -125,7 +125,7 @@ func concurrentSmbScan(ctx context.Context, info *Common.HostInfo, credentials [
 						lockedMutex.Lock()
 						lockedUsers[credential.Username] = true
 						lockedMutex.Unlock()
-						Common.LogError(fmt.Sprintf("用户 %s 已被锁定", credential.Username))
+						Common.LogError(fmt.Sprintf("User %s is locked out", credential.Username))
 					}
 				}
 			}

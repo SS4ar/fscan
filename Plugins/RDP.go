@@ -41,7 +41,7 @@ type RDPScanResult struct {
 func RdpScan(info *Common.HostInfo) error {
 	defer func() {
 		if r := recover(); r != nil {
-			Common.LogError(fmt.Sprintf("RDP扫描panic: %v", r))
+			Common.LogError(fmt.Sprintf("RDP scan panic: %v", r))
 		}
 	}()
 

@@ -35,7 +35,7 @@ func InfoCheck(Url string, CheckData *[]CheckDatas) []string {
 
 			// 处理匹配错误
 			if err != nil {
-				Common.LogError(fmt.Sprintf("规则匹配错误 [%s]: %v", rule.Name, err))
+				Common.LogError(fmt.Sprintf("Rule match error [%s]: %v", rule.Name, err))
 				continue
 			}
 
@@ -58,7 +58,7 @@ func InfoCheck(Url string, CheckData *[]CheckDatas) []string {
 
 	// 输出结果
 	if len(matchedInfos) > 0 {
-		result := fmt.Sprintf("发现指纹 目标: %-25v 指纹: %s", Url, matchedInfos)
+		result := fmt.Sprintf("Fingerprint match: %-25v fingerprints: %s", Url, matchedInfos)
 		Common.LogInfo(result)
 		return matchedInfos
 	}

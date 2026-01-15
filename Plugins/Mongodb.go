@@ -50,7 +50,7 @@ func MongodbScan(info *Common.HostInfo) error {
 			return result.err
 		} else if result.isUnauth {
 			// 记录控制台输出
-			Common.LogSuccess(fmt.Sprintf("MongoDB %v 未授权访问", target))
+			Common.LogSuccess(fmt.Sprintf("MongoDB %v unauthorized access", target))
 
 			// 保存未授权访问结果
 			scanResult := &Common.ScanResult{
@@ -71,7 +71,7 @@ func MongodbScan(info *Common.HostInfo) error {
 		}
 		return nil
 	case <-ctx.Done():
-		Common.LogError(fmt.Sprintf("MongoDB扫描超时: %s", target))
+		Common.LogError(fmt.Sprintf("MongoDB scan timeout: %s", target))
 		return fmt.Errorf("全局超时")
 	}
 }

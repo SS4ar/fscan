@@ -168,14 +168,16 @@ func (om *OutputManager) saveResult(result *ScanResult) error {
 		return fmt.Errorf(GetText("output_not_init"))
 	}
 
+	sanitized := sanitizeScanResult(result)
+
 	var err error
 	switch om.outputFormat {
 	case "txt":
-		err = om.writeTxt(result)
+		err = om.writeTxt(sanitized)
 	case "json":
-		err = om.writeJson(result)
+		err = om.writeJson(sanitized)
 	case "csv":
-		err = om.writeCsv(result)
+		err = om.writeCsv(sanitized)
 	default:
 		LogDebug(GetText("output_format_invalid", om.outputFormat))
 		return fmt.Errorf(GetText("output_format_invalid", om.outputFormat))

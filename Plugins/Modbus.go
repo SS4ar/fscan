@@ -267,8 +267,8 @@ func saveModbusResult(info *Common.HostInfo, target string, result *ModbusScanRe
 	Common.SaveResult(scanResult)
 
 	// 控制台输出
-	Common.LogSuccess(fmt.Sprintf("Modbus服务 %s 无认证访问", target))
+	Common.LogSuccess(fmt.Sprintf("Modbus %s unauthenticated access", target))
 	if result.DeviceInfo != "" {
-		Common.LogSuccess(fmt.Sprintf("设备信息: %s", result.DeviceInfo))
+		Common.LogSuccess(fmt.Sprintf("Device info: %s", result.DeviceInfo))
 	}
 }

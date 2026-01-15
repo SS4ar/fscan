@@ -157,6 +157,7 @@ func handleLog(entry *LogEntry) {
 		ProgressBar.Clear()
 	}
 
+	entry.Content = sanitizeASCII(entry.Content)
 	printLog(entry)
 
 	if ProgressBar != nil {

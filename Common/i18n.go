@@ -2,7 +2,6 @@ package Common
 
 import (
 	"fmt"
-	"strings"
 )
 
 // 支持的语言类型
@@ -73,13 +72,13 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "初始化CSV输出",
 		LangEN: "Initializing CSV output",
 		LangJA: "CSV出力を初期化中",
-		LangRU: "Инициализация вывода CSV",
+		LangRU: "Initializing CSV output",
 	},
 	"output_write_csv_header_failed": {
 		LangZH: "写入CSV头失败: %v",
 		LangEN: "Failed to write CSV header: %v",
 		LangJA: "CSVヘッダーの書き込みに失敗: %v",
-		LangRU: "Не удалось записать заголовок CSV: %v",
+		LangRU: "Failed to write CSV header: %v",
 	},
 	"output_init_json": {
 		LangZH: "初始化JSON输出",
@@ -145,7 +144,7 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "正在刷新CSV缓冲",
 		LangEN: "Flushing CSV buffer",
 		LangJA: "CSVバッファをフラッシュ中",
-		LangRU: "Очистка буфера CSV",
+		LangRU: "Flushing CSV buffer",
 	},
 	"output_close_failed": {
 		LangZH: "关闭输出文件失败: %v",
@@ -226,12 +225,12 @@ var i18nMap = map[string]map[string]string{
 			"  - Диапазон: 1-65535\n" +
 			"  - Несколько: 22,80,3306\n" +
 			"Предустановки:\n" +
-			"  - main: Общие порты\n" +
-			"  - service: Порты служб\n" +
-			"  - db: Порты баз данных\n" +
-			"  - web: Web порты\n" +
-			"  - all: Все порты\n" +
-			"Пример: -p main, -p 80,443, -p 1-1000",
+			"  - main: Common ports\n" +
+			"  - service: Service ports\n" +
+			"  - db: Database ports\n" +
+			"  - web: Web ports\n" +
+			"  - all: All ports\n" +
+			"Example: -p main, -p 80,443, -p 1-1000",
 	},
 	"flag_scan_mode": {
 		LangZH: "指定要使用的扫描插件:\n" +
@@ -268,22 +267,22 @@ var i18nMap = map[string]map[string]string{
 			"  - ローカル: localinfo, dcinfo, minidump (明示的に指定が必要)",
 
 		LangRU: "Укажите используемые плагины сканирования:\n" +
-			"  - All: Использовать все неконфиденциальные плагины\n" +
-			"  - Один плагин: например, ssh, redis, mysql\n" +
-			"  - Несколько плагинов: через запятую, например ssh,ftp,redis\n\n" +
+			"  - All: Use all non-sensitive plugins\n" +
+			"  - Single plugin: e.g. ssh, redis, mysql\n" +
+			"  - Multiple plugins: comma-separated, e.g. ssh,ftp,redis\n\n" +
 			"Категории плагинов:\n" +
-			"  - Сервисы: ssh, ftp, telnet, smb, rdp, vnc...\n" +
-			"  - Базы данных: mysql, redis, mongodb, postgres...\n" +
-			"  - Веб: webtitle, webpoc...\n" +
+			"  - Services: ssh, ftp, telnet, smb, rdp, vnc...\n" +
+			"  - Databases: mysql, redis, mongodb, postgres...\n" +
+			"  - Web: webtitle, webpoc...\n" +
 			"  - Уязвимости: ms17010...\n" +
-			"  - Локальные: localinfo, dcinfo, minidump (требуется явное указание)",
+			"  - Local: localinfo, dcinfo, minidump (must be explicitly specified)",
 	},
 
 	"flag_exclude_hosts": {
 		LangZH: "排除指定主机范围,支持CIDR格式,如: 192.168.1.1/24",
 		LangEN: "Exclude host ranges, supports CIDR format, e.g.: 192.168.1.1/24",
 		LangJA: "除外ホスト範囲を指定、CIDR形式対応、例: 192.168.1.1/24",
-		LangRU: "Исключить диапазоны хостов, поддерживает формат CIDR, например: 192.168.1.1/24",
+		LangRU: "Exclude host ranges, supports CIDR format, e.g.: 192.168.1.1/24",
 	},
 
 	"flag_add_users": {
@@ -325,7 +324,7 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "指定SSH私钥文件路径(默认为id_rsa)",
 		LangEN: "Specify SSH private key file path (default: id_rsa)",
 		LangJA: "SSH秘密鍵ファイルパスを指定(デフォルト: id_rsa)",
-		LangRU: "Указать путь к файлу приватного ключа SSH (по умолчанию: id_rsa)",
+		LangRU: "Specify SSH private key file path (default: id_rsa)",
 	},
 
 	"flag_thread_num": {
@@ -374,7 +373,7 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "使用系统ping命令替代ICMP探测",
 		LangEN: "Use system ping command instead of ICMP probe",
 		LangJA: "ICMPプローブの代わりにシステムpingコマンドを使用",
-		LangRU: "Использовать системную команду ping вместо ICMP-зондирования",
+		LangRU: "Use system ping command instead of ICMP probe",
 	},
 
 	"flag_enable_fingerprint": {
@@ -444,7 +443,7 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "设置HTTP请求Cookie",
 		LangEN: "Set HTTP request cookie",
 		LangJA: "HTTPリクエストのCookieを設定",
-		LangRU: "Установить cookie HTTP-запроса",
+		LangRU: "Set HTTP request cookie",
 	},
 
 	"flag_web_timeout": {
@@ -465,7 +464,7 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "设置Socks5代理(用于TCP连接,将影响超时设置)",
 		LangEN: "Set Socks5 proxy (for TCP connections, will affect timeout settings)",
 		LangJA: "Socks5プロキシを設定(TCP接続用、タイムアウト設定に影響します)",
-		LangRU: "Установить Socks5 прокси (для TCP соединений, влияет на настройки таймаута)",
+		LangRU: "Set Socks5 proxy (for TCP connections, will affect timeout settings)",
 	},
 	"flag_local_mode": {
 		LangZH: "启用本地信息收集模式",
@@ -479,42 +478,42 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "指定自定义POC文件路径",
 		LangEN: "Specify custom POC file path",
 		LangJA: "カスタムPOCファイルパスを指定",
-		LangRU: "Указать путь к пользовательскому файлу POC",
+		LangRU: "Specify custom POC file path",
 	},
 
 	"flag_poc_name": {
 		LangZH: "指定要使用的POC名称,如: -pocname weblogic",
 		LangEN: "Specify POC name to use, e.g.: -pocname weblogic",
 		LangJA: "使用するPOC名を指定、例: -pocname weblogic",
-		LangRU: "Указать имя используемого POC, например: -pocname weblogic",
+		LangRU: "Specify POC name to use, e.g.: -pocname weblogic",
 	},
 
 	"flag_poc_full": {
 		LangZH: "启用完整POC扫描(如测试shiro全部100个key)",
 		LangEN: "Enable full POC scan (e.g. test all 100 shiro keys)",
 		LangJA: "完全POCスキャンを有効化(例: shiroの全100キーをテスト)",
-		LangRU: "Включить полное POC-сканирование (например, тест всех 100 ключей shiro)",
+		LangRU: "Enable full POC scan (e.g. test all 100 shiro keys)",
 	},
 
 	"flag_dns_log": {
 		LangZH: "启用dnslog进行漏洞验证",
 		LangEN: "Enable dnslog for vulnerability verification",
 		LangJA: "脆弱性検証にdnslogを有効化",
-		LangRU: "Включить dnslog для проверки уязвимостей",
+		LangRU: "Enable dnslog for vulnerability verification",
 	},
 
 	"flag_poc_num": {
 		LangZH: "设置POC扫描并发数",
 		LangEN: "Set POC scan concurrency",
 		LangJA: "POCスキャンの同時実行数を設定",
-		LangRU: "Установить параллельность POC-сканирования",
+		LangRU: "Set POC scan concurrency",
 	},
 
 	"flag_no_poc": {
 		LangZH: "禁用POC扫描",
 		LangEN: "Enable POC scanning",
 		LangJA: "POCスキャンを無効にする",
-		LangRU: "Отключить POC-сканирование",
+		LangRU: "Enable POC scanning",
 	},
 
 	// Redis配置相关
@@ -522,42 +521,42 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "指定Redis写入的SSH公钥文件",
 		LangEN: "Specify SSH public key file for Redis write",
 		LangJA: "Redis書き込み用のSSH公開鍵ファイルを指定",
-		LangRU: "Указать файл публичного ключа SSH для записи Redis",
+		LangRU: "Specify SSH public key file for Redis write",
 	},
 
 	"flag_redis_shell": {
 		LangZH: "指定Redis写入的计划任务内容",
 		LangEN: "Specify cron task content for Redis write",
 		LangJA: "Redis書き込み用のcronタスク内容を指定",
-		LangRU: "Указать содержимое cron-задачи для записи Redis",
+		LangRU: "Specify cron task content for Redis write",
 	},
 
 	"flag_disable_redis": {
 		LangZH: "禁用Redis安全检测",
 		LangEN: "Disable Redis security detection",
 		LangJA: "Redisセキュリティ検出を無効化",
-		LangRU: "Отключить обнаружение безопасности Redis",
+		LangRU: "Disable Redis security detection",
 	},
 
 	"flag_redis_write_path": {
 		LangZH: "指定Redis写入的文件路径(如:/var/www/html/shell.php)",
 		LangEN: "Specify file path for Redis arbitrary write (e.g., /var/www/html/shell.php)",
 		LangJA: "Redis書き込み用のファイルパスを指定（例：/var/www/html/shell.php）",
-		LangRU: "Указать путь к файлу для произвольной записи Redis (например, /var/www/html/shell.php)",
+		LangRU: "Specify file path for Redis arbitrary write (e.g., /var/www/html/shell.php)",
 	},
 
 	"flag_redis_write_content": {
 		LangZH: "指定Redis写入的文件内容(与-rwp配合使用)",
 		LangEN: "Specify content for Redis arbitrary write (use with -rwp)",
 		LangJA: "Redis書き込み用の内容を指定（-rwpと併用）",
-		LangRU: "Указать содержимое для произвольной записи Redis (использовать с -rwp)",
+		LangRU: "Specify content for Redis arbitrary write (use with -rwp)",
 	},
 
 	"flag_redis_write_file": {
 		LangZH: "指定Redis写入的本地文件路径(将文件内容写入-rwp指定的路径)",
 		LangEN: "Specify local file to read content from for Redis write (written to path specified by -rwp)",
 		LangJA: "Redis書き込み用のローカルファイルパスを指定（内容が-rwpで指定されたパスに書き込まれる）",
-		LangRU: "Указать локальный файл для чтения содержимого для записи Redis (записывается по пути, указанному в -rwp)",
+		LangRU: "Specify local file to read content from for Redis write (written to path specified by -rwp)",
 	},
 
 	// 暴力破解配置
@@ -580,7 +579,7 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "指定FCG/SMB远程文件路径",
 		LangEN: "Specify FCG/SMB remote file path",
 		LangJA: "FCG/SMBリモートファイルパスを指定",
-		LangRU: "Указать удаленный путь к файлу FCG/SMB",
+		LangRU: "Specify FCG/SMB remote file path",
 	},
 
 	"flag_hash_value": {
@@ -616,7 +615,7 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "指定输出格式 (txt/json/csv)",
 		LangEN: "Specify output format (txt/json/csv)",
 		LangJA: "出力形式を指定 (txt/json/csv)",
-		LangRU: "Указать формат вывода (txt/json/csv)",
+		LangRU: "Specify output format (txt/json/csv)",
 	},
 
 	"flag_disable_save": {
@@ -644,7 +643,7 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "日志输出级别(ALL/SUCCESS/ERROR/INFO/DEBUG)",
 		LangEN: "Log output level (ALL/SUCCESS/ERROR/INFO/DEBUG)",
 		LangJA: "ログ出力レベル(ALL/SUCCESS/ERROR/INFO/DEBUG)",
-		LangRU: "Уровень вывода журнала (ALL/SUCCESS/ERROR/INFO/DEBUG)",
+		LangRU: "Log output level (ALL/SUCCESS/ERROR/INFO/DEBUG)",
 	},
 
 	"flag_show_progress": {
@@ -762,7 +761,7 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "参数 -h、-u、-local 不能同时使用",
 		LangEN: "Parameters -h, -u, -local cannot be used simultaneously",
 		LangJA: "パラメータ -h、-u、-local は同時に使用できません",
-		LangRU: "Параметры -h, -u, -local нельзя использовать одновременно",
+		LangRU: "Parameters -h, -u, -local cannot be used simultaneously",
 	},
 
 	"extra_ports": {
@@ -787,13 +786,13 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "Socks5代理: %s",
 		LangEN: "Socks5 proxy: %s",
 		LangJA: "Socks5プロキシ: %s",
-		LangRU: "Socks5 прокси: %s",
+		LangRU: "Socks5 proxy: %s",
 	},
 	"socks5_proxy_error": {
 		LangZH: "Socks5代理格式错误: %v",
 		LangEN: "Invalid Socks5 proxy format: %v",
 		LangJA: "Socks5プロキシフォーマットエラー: %v",
-		LangRU: "Неверный формат Socks5 прокси: %v",
+		LangRU: "Invalid Socks5 proxy format: %v",
 	},
 	"http_proxy": {
 		LangZH: "HTTP代理: %s",
@@ -906,13 +905,13 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "CIDR格式解析失败: %s, %v",
 		LangEN: "CIDR format parse failed: %s, %v",
 		LangJA: "CIDR形式の解析に失敗: %s, %v",
-		LangRU: "Ошибка разбора формата CIDR: %s, %v",
+		LangRU: "CIDR format parse failed: %s, %v",
 	},
 	"parse_cidr_to_range": {
 		LangZH: "解析CIDR %s -> IP范围 %s",
 		LangEN: "Parse CIDR %s -> IP range %s",
 		LangJA: "CIDR %s -> IP範囲 %s を解析",
-		LangRU: "Разбор CIDR %s -> диапазон IP %s",
+		LangRU: "Parse CIDR %s -> IP range %s",
 	},
 	"ip_range_format_error": {
 		LangZH: "IP范围格式错误: %s",
@@ -942,7 +941,7 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "CIDR范围: %s",
 		LangEN: "CIDR range: %s",
 		LangJA: "CIDR範囲: %s",
-		LangRU: "Диапазон CIDR: %s",
+		LangRU: "CIDR range: %s",
 	},
 	"invalid_port": {
 		LangZH: "忽略无效端口: %s",
@@ -1008,61 +1007,61 @@ var i18nMap = map[string]map[string]string{
 		LangZH: "建立TCP连接失败: %v",
 		LangEN: "Failed to establish TCP connection: %v",
 		LangJA: "TCP接続の確立に失敗しました: %v",
-		LangRU: "Не удалось установить TCP-соединение: %v",
+		LangRU: "Failed to establish TCP connection: %v",
 	},
 	"socks5_create_failed": {
 		LangZH: "创建Socks5代理失败: %v",
 		LangEN: "Failed to create Socks5 proxy: %v",
 		LangJA: "Socks5プロキシの作成に失敗しました: %v",
-		LangRU: "Не удалось создать прокси Socks5: %v",
+		LangRU: "Failed to create Socks5 proxy: %v",
 	},
 	"socks5_conn_failed": {
 		LangZH: "通过Socks5建立连接失败: %v",
 		LangEN: "Failed to establish connection through Socks5: %v",
 		LangJA: "Socks5経由での接続確立に失敗しました: %v",
-		LangRU: "Не удалось установить соединение через Socks5: %v",
+		LangRU: "Failed to establish connection through Socks5: %v",
 	},
 	"socks5_parse_failed": {
 		LangZH: "解析Socks5代理地址失败: %v",
 		LangEN: "Failed to parse Socks5 proxy address: %v",
 		LangJA: "Socks5プロキシアドレスの解析に失敗しました: %v",
-		LangRU: "Не удалось разобрать адрес прокси Socks5: %v",
+		LangRU: "Failed to parse Socks5 proxy address: %v",
 	},
 	"socks5_only": {
 		LangZH: "仅支持socks5代理",
 		LangEN: "Only socks5 proxy is supported",
 		LangJA: "socks5プロキシのみサポートされています",
-		LangRU: "Поддерживается только прокси socks5",
+		LangRU: "Only socks5 proxy is supported",
 	},
 	"flag_language": {
 		LangZH: "指定界面语言 (zh:中文, en:英文, ja:日文, ru:俄文)",
-		LangEN: "Specify interface language (zh:Chinese, en:English, ja:Japanese, ru:Russian)",
+		LangEN: "Specify interface language (en only)",
 		LangJA: "インターフェース言語を指定 (zh:中国語, en:英語, ja:日本語, ru:ロシア語)",
-		LangRU: "Указать язык интерфейса (zh:Китайский, en:Английский, ja:Японский, ru:Русский)",
+		LangRU: "Specify interface language (en only)",
 	},
 	"icmp_listen_failed": {
 		LangZH: "ICMP监听失败: %v",
 		LangEN: "ICMP listen failed: %v",
 		LangJA: "ICMPリッスンに失敗: %v",
-		LangRU: "Ошибка прослушивания ICMP: %v",
+		LangRU: "ICMP listen failed: %v",
 	},
 	"trying_no_listen_icmp": {
 		LangZH: "正在尝试无监听ICMP探测...",
 		LangEN: "Trying ICMP probe without listening...",
 		LangJA: "リッスンなしICMP探知を試みています...",
-		LangRU: "Пробуем ICMP-зондирование без прослушивания...",
+		LangRU: "Trying ICMP probe without listening...",
 	},
 	"icmp_connect_failed": {
 		LangZH: "ICMP连接失败: %v",
 		LangEN: "ICMP connection failed: %v",
 		LangJA: "ICMP接続に失敗: %v",
-		LangRU: "Ошибка подключения ICMP: %v",
+		LangRU: "ICMP connection failed: %v",
 	},
 	"insufficient_privileges": {
 		LangZH: "当前用户权限不足,无法发送ICMP包",
 		LangEN: "Insufficient privileges to send ICMP packets",
 		LangJA: "ICMPパケットを送信する権限が不足しています",
-		LangRU: "Недостаточно прав для отправки ICMP-пакетов",
+		LangRU: "Insufficient privileges to send ICMP packets",
 	},
 	"switching_to_ping": {
 		LangZH: "切换为PING方式探测...",
@@ -1094,13 +1093,8 @@ var i18nMap = map[string]map[string]string{
 var currentLang = LangEN
 
 func SetLanguage() {
-	// 使用flag设置的语言
-	switch strings.ToLower(Language) {
-	case LangZH, LangEN, LangJA, LangRU:
-		currentLang = strings.ToLower(Language)
-	default:
-		currentLang = LangEN // 不支持的语言默认使用英文
-	}
+	// Force English output to ensure consistent UI language.
+	currentLang = LangEN
 }
 
 // GetText 获取指定key的当前语言文本

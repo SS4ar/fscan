@@ -102,12 +102,12 @@ func EnhancedPortScan(hosts []string, ports string, timeout int64) []string {
 
 						// 记录服务信息
 						var sb strings.Builder
-						sb.WriteString("服务识别 " + addr + " => ")
+						sb.WriteString("Service identified " + addr + " => ")
 						if info.Name != "unknown" {
 							sb.WriteString("[" + info.Name + "]")
 						}
 						if info.Version != "" {
-							sb.WriteString(" 版本:" + info.Version)
+							sb.WriteString(" version:" + info.Version)
 						}
 
 						for k, v := range info.Extras {
@@ -116,16 +116,16 @@ func EnhancedPortScan(hosts []string, ports string, timeout int64) []string {
 							}
 							switch k {
 							case "vendor_product":
-								sb.WriteString(" 产品:" + v)
+								sb.WriteString(" product:" + v)
 							case "os":
-								sb.WriteString(" 系统:" + v)
+								sb.WriteString(" os:" + v)
 							case "info":
-								sb.WriteString(" 信息:" + v)
+								sb.WriteString(" info:" + v)
 							}
 						}
 
 						if len(info.Banner) > 0 && len(info.Banner) < 100 {
-							sb.WriteString(" Banner:[" + strings.TrimSpace(info.Banner) + "]")
+							sb.WriteString(" banner:[" + strings.TrimSpace(info.Banner) + "]")
 						}
 
 						Common.LogInfo(sb.String())

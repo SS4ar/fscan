@@ -17,12 +17,12 @@ func NewWebScanStrategy() *WebScanStrategy {
 
 // Name 返回策略名称
 func (s *WebScanStrategy) Name() string {
-	return "Web扫描"
+	return "Web scan"
 }
 
 // Description 返回策略描述
 func (s *WebScanStrategy) Description() string {
-	return "扫描Web应用漏洞和信息"
+	return "Scan web vulnerabilities and information"
 }
 
 // Execute 执行Web扫描策略

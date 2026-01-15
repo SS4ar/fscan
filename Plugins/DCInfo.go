@@ -40,7 +40,7 @@ func (d *DomainInfo) GetCAComputers() ([]string, error) {
 
 	sr, err := d.conn.SearchWithPaging(searchRequest, 10000)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("查询CA服务器失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to query CA servers: %v", err))
 		return nil, err
 	}
 
@@ -54,7 +54,7 @@ func (d *DomainInfo) GetCAComputers() ([]string, error) {
 	}
 
 	if len(caComputers) > 0 {
-		Common.LogSuccess(fmt.Sprintf("共发现 %d 个CA服务器", len(caComputers)))
+	Common.LogSuccess(fmt.Sprintf("Found CA servers: %d", len(caComputers)))
 	} else {
 		Common.LogDebug("未发现CA服务器")
 	}
@@ -79,7 +79,7 @@ func (d *DomainInfo) GetExchangeServers() ([]string, error) {
 
 	sr, err := d.conn.SearchWithPaging(searchRequest, 10000)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("查询Exchange服务器失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to query Exchange servers: %v", err))
 		return nil, err
 	}
 
@@ -100,7 +100,7 @@ func (d *DomainInfo) GetExchangeServers() ([]string, error) {
 	}
 
 	if len(exchangeServers) > 0 {
-		Common.LogSuccess(fmt.Sprintf("共发现 %d 个Exchange服务器", len(exchangeServers)))
+	Common.LogSuccess(fmt.Sprintf("Found Exchange servers: %d", len(exchangeServers)))
 	} else {
 		Common.LogDebug("未发现Exchange服务器")
 	}
@@ -125,7 +125,7 @@ func (d *DomainInfo) GetMsSqlServers() ([]string, error) {
 
 	sr, err := d.conn.SearchWithPaging(searchRequest, 10000)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("查询SQL Server失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to query SQL Server: %v", err))
 		return nil, err
 	}
 
@@ -139,7 +139,7 @@ func (d *DomainInfo) GetMsSqlServers() ([]string, error) {
 	}
 
 	if len(sqlServers) > 0 {
-		Common.LogSuccess(fmt.Sprintf("共发现 %d 个SQL Server", len(sqlServers)))
+	Common.LogSuccess(fmt.Sprintf("Found SQL Servers: %d", len(sqlServers)))
 	} else {
 		Common.LogDebug("未发现SQL Server")
 	}
@@ -157,7 +157,7 @@ func (d *DomainInfo) GetSpecialComputers() (map[string][]string, error) {
 	if err == nil && len(sqlServers) > 0 {
 		results["SQL服务器"] = sqlServers
 	} else if err != nil {
-		Common.LogError(fmt.Sprintf("查询SQL Server时出错: %v", err))
+		Common.LogError(fmt.Sprintf("Error querying SQL Server: %v", err))
 	}
 
 	// 获取CA服务器
@@ -166,7 +166,7 @@ func (d *DomainInfo) GetSpecialComputers() (map[string][]string, error) {
 	if err == nil && len(caComputers) > 0 {
 		results["CA服务器"] = caComputers
 	} else if err != nil {
-		Common.LogError(fmt.Sprintf("查询CA服务器时出错: %v", err))
+		Common.LogError(fmt.Sprintf("Error querying CA servers: %v", err))
 	}
 
 	// 获取域控制器
@@ -194,12 +194,12 @@ func (d *DomainInfo) GetSpecialComputers() (map[string][]string, error) {
 		}
 		if len(dcs) > 0 {
 			results["域控制器"] = dcs
-			Common.LogSuccess(fmt.Sprintf("共发现 %d 个域控制器", len(dcs)))
+			Common.LogSuccess(fmt.Sprintf("Found domain controllers: %d", len(dcs)))
 		} else {
 			Common.LogDebug("未发现域控制器")
 		}
 	} else {
-		Common.LogError(fmt.Sprintf("查询域控制器时出错: %v", err))
+		Common.LogError(fmt.Sprintf("Error querying domain controllers: %v", err))
 	}
 
 	// 获取Exchange服务器
@@ -208,11 +208,11 @@ func (d *DomainInfo) GetSpecialComputers() (map[string][]string, error) {
 	if err == nil && len(exchangeServers) > 0 {
 		results["Exchange服务器"] = exchangeServers
 	} else if err != nil {
-		Common.LogError(fmt.Sprintf("查询Exchange服务器时出错: %v", err))
+		Common.LogError(fmt.Sprintf("Error querying Exchange servers: %v", err))
 	}
 
 	if len(results) > 0 {
-		Common.LogSuccess(fmt.Sprintf("特殊计算机查询完成，共发现 %d 类服务器", len(results)))
+		Common.LogSuccess(fmt.Sprintf("Special computer query completed, server types found: %d", len(results)))
 		for serverType, servers := range results {
 			Common.LogDebug(fmt.Sprintf("%s: %d 台", serverType, len(servers)))
 		}
@@ -240,7 +240,7 @@ func (d *DomainInfo) GetDomainUsers() ([]string, error) {
 
 	sr, err := d.conn.SearchWithPaging(searchRequest, 10000)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("查询域用户失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to query domain users: %v", err))
 		return nil, err
 	}
 
@@ -254,7 +254,7 @@ func (d *DomainInfo) GetDomainUsers() ([]string, error) {
 	}
 
 	if len(users) > 0 {
-		Common.LogSuccess(fmt.Sprintf("共发现 %d 个域用户", len(users)))
+		Common.LogSuccess(fmt.Sprintf("Found domain users: %d", len(users)))
 	} else {
 		Common.LogDebug("未发现域用户")
 	}
@@ -279,7 +279,7 @@ func (d *DomainInfo) GetDomainAdmins() ([]string, error) {
 
 	sr, err := d.conn.SearchWithPaging(searchRequest, 10000)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("查询Domain Admins组失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to query Domain Admins group: %v", err))
 		return nil, err
 	}
 
@@ -303,7 +303,7 @@ func (d *DomainInfo) GetDomainAdmins() ([]string, error) {
 
 			memberResult, err := d.conn.Search(memberSearch)
 			if err != nil {
-				Common.LogError(fmt.Sprintf("查询成员 %s 失败: %v", memberDN, err))
+				Common.LogError(fmt.Sprintf("Failed to query member %s: %v", memberDN, err))
 				continue
 			}
 
@@ -318,7 +318,7 @@ func (d *DomainInfo) GetDomainAdmins() ([]string, error) {
 	}
 
 	if len(admins) > 0 {
-		Common.LogSuccess(fmt.Sprintf("共发现 %d 个域管理员", len(admins)))
+		Common.LogSuccess(fmt.Sprintf("Found domain admins: %d", len(admins)))
 	} else {
 		Common.LogDebug("未发现域管理员")
 	}
@@ -343,7 +343,7 @@ func (d *DomainInfo) GetOUs() ([]string, error) {
 
 	sr, err := d.conn.SearchWithPaging(searchRequest, 10000)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("查询OU失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to query OUs: %v", err))
 		return nil, err
 	}
 
@@ -357,7 +357,7 @@ func (d *DomainInfo) GetOUs() ([]string, error) {
 	}
 
 	if len(ous) > 0 {
-		Common.LogSuccess(fmt.Sprintf("共发现 %d 个组织单位", len(ous)))
+		Common.LogSuccess(fmt.Sprintf("Found organizational units: %d", len(ous)))
 	} else {
 		Common.LogDebug("未发现组织单位")
 	}
@@ -382,7 +382,7 @@ func (d *DomainInfo) GetComputers() ([]Computer, error) {
 
 	sr, err := d.conn.SearchWithPaging(searchRequest, 10000)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("查询计算机失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to query computers: %v", err))
 		return nil, err
 	}
 
@@ -401,7 +401,7 @@ func (d *DomainInfo) GetComputers() ([]Computer, error) {
 	}
 
 	if len(computers) > 0 {
-		Common.LogSuccess(fmt.Sprintf("共发现 %d 台计算机", len(computers)))
+		Common.LogSuccess(fmt.Sprintf("Found computers: %d", len(computers)))
 
 		// 统计操作系统分布
 		osCount := make(map[string]int)
@@ -445,7 +445,7 @@ func (d *DomainInfo) GetTrustDomains() ([]string, error) {
 
 	sr, err := d.conn.SearchWithPaging(searchRequest, 10000)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("查询信任域失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to query trusted domains: %v", err))
 		return nil, err
 	}
 
@@ -459,7 +459,7 @@ func (d *DomainInfo) GetTrustDomains() ([]string, error) {
 	}
 
 	if len(trustInfo) > 0 {
-		Common.LogSuccess(fmt.Sprintf("共发现 %d 个信任域", len(trustInfo)))
+		Common.LogSuccess(fmt.Sprintf("Found trusted domains: %d", len(trustInfo)))
 	} else {
 		Common.LogDebug("未发现信任域关系")
 	}
@@ -495,7 +495,7 @@ func (d *DomainInfo) GetAdminGroups() (map[string][]string, error) {
 
 		sr, err := d.conn.SearchWithPaging(searchRequest, 10000)
 		if err != nil {
-			Common.LogError(fmt.Sprintf("查询 %s 组失败: %v", groupName, err))
+			Common.LogError(fmt.Sprintf("Failed to query group %s: %v", groupName, err))
 			continue
 		}
 
@@ -514,7 +514,7 @@ func (d *DomainInfo) GetAdminGroups() (map[string][]string, error) {
 	}
 
 	if len(results) > 0 {
-		Common.LogSuccess(fmt.Sprintf("共发现 %d 个管理员组", len(results)))
+		Common.LogSuccess(fmt.Sprintf("Found admin groups: %d", len(results)))
 	} else {
 		Common.LogDebug("未发现管理员组信息")
 	}
@@ -550,7 +550,7 @@ func (d *DomainInfo) GetDelegation() (map[string][]string, error) {
 
 		sr, err := d.conn.SearchWithPaging(searchRequest, 10000)
 		if err != nil {
-			Common.LogError(fmt.Sprintf("查询%s失败: %v", delegationType, err))
+			Common.LogError(fmt.Sprintf("Failed to query %s: %v", delegationType, err))
 			continue
 		}
 
@@ -565,14 +565,14 @@ func (d *DomainInfo) GetDelegation() (map[string][]string, error) {
 
 		if len(entries) > 0 {
 			results[delegationType] = entries
-			Common.LogSuccess(fmt.Sprintf("%s: 发现 %d 条记录", delegationType, len(entries)))
+			Common.LogSuccess(fmt.Sprintf("%s: records found: %d", delegationType, len(entries)))
 		} else {
 			Common.LogDebug(fmt.Sprintf("未发现%s记录", delegationType))
 		}
 	}
 
 	if len(results) > 0 {
-		Common.LogSuccess(fmt.Sprintf("共发现 %d 类委派配置", len(results)))
+		Common.LogSuccess(fmt.Sprintf("Found delegation types: %d", len(results)))
 	} else {
 		Common.LogDebug("未发现任何委派配置")
 	}
@@ -598,7 +598,7 @@ func (d *DomainInfo) GetAsrepRoastUsers() ([]string, error) {
 
 	sr, err := d.conn.SearchWithPaging(searchRequest, 10000)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("查询AS-REP Roasting漏洞用户失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to query users with AS-REP Roasting: %v", err))
 		return nil, err
 	}
 
@@ -612,7 +612,7 @@ func (d *DomainInfo) GetAsrepRoastUsers() ([]string, error) {
 	}
 
 	if len(users) > 0 {
-		Common.LogSuccess(fmt.Sprintf("共发现 %d 个存在AS-REP Roasting漏洞的用户", len(users)))
+		Common.LogSuccess(fmt.Sprintf("Found users with AS-REP Roasting: %d", len(users)))
 	} else {
 		Common.LogDebug("未发现存在AS-REP Roasting漏洞的用户")
 	}
@@ -645,7 +645,7 @@ func (d *DomainInfo) GetPasswordPolicy() (map[string]string, error) {
 
 	sr, err := d.conn.Search(searchRequest)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("查询密码策略失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to query password policy: %v", err))
 		return nil, err
 	}
 
@@ -683,7 +683,7 @@ func (d *DomainInfo) GetPasswordPolicy() (map[string]string, error) {
 	}
 
 	if len(policy) > 0 {
-		Common.LogSuccess(fmt.Sprintf("成功获取域密码策略，共 %d 项配置", len(policy)))
+		Common.LogSuccess(fmt.Sprintf("Domain password policy retrieved, settings: %d", len(policy)))
 
 		// 安全性评估
 		minLengthInt, _ := strconv.Atoi(strings.TrimSuffix(policy["最小密码长度"], "个字符"))
@@ -719,7 +719,7 @@ func (d *DomainInfo) GetSPNs() (map[string][]string, error) {
 
 	sr, err := d.conn.SearchWithPaging(searchRequest, 10000)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("查询SPN失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to query SPNs: %v", err))
 		return nil, err
 	}
 
@@ -740,7 +740,7 @@ func (d *DomainInfo) GetSPNs() (map[string][]string, error) {
 	}
 
 	if len(spns) > 0 {
-		Common.LogSuccess(fmt.Sprintf("共发现 %d 个SPN配置", len(spns)))
+		Common.LogSuccess(fmt.Sprintf("Found SPN configurations: %d", len(spns)))
 	} else {
 		Common.LogDebug("未发现SPN配置")
 	}
@@ -756,13 +756,13 @@ func getDomainController() (string, error) {
 	cmd := exec.Command("wmic", "computersystem", "get", "domain")
 	output, err := cmd.Output()
 	if err != nil {
-		Common.LogError(fmt.Sprintf("获取域名失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to get domain name: %v", err))
 		return "", fmt.Errorf("获取域名失败: %v", err)
 	}
 
 	lines := strings.Split(string(output), "\n")
 	if len(lines) < 2 {
-		Common.LogError("wmic输出格式异常，未找到域名")
+		Common.LogError("Invalid wmic output format, domain not found")
 		return "", fmt.Errorf("未找到域名")
 	}
 
@@ -778,7 +778,7 @@ func getDomainController() (string, error) {
 	cmd = exec.Command("nslookup", "-type=SRV", fmt.Sprintf("_ldap._tcp.dc._msdcs.%s", domain))
 	output, err = cmd.Output()
 	if err != nil {
-		Common.LogError(fmt.Sprintf("nslookup查询失败: %v", err))
+		Common.LogError(fmt.Sprintf("nslookup failed: %v", err))
 		return "", fmt.Errorf("查询域控制器失败: %v", err)
 	}
 
@@ -790,7 +790,7 @@ func getDomainController() (string, error) {
 			if len(parts) > 1 {
 				dcHost := strings.TrimSpace(parts[1])
 				dcHost = strings.TrimSuffix(dcHost, ".")
-				Common.LogSuccess(fmt.Sprintf("找到域控制器: %s", dcHost))
+				Common.LogSuccess(fmt.Sprintf("Found domain controller: %s", dcHost))
 				return dcHost, nil
 			}
 		}
@@ -816,7 +816,7 @@ func NewDomainInfo() (*DomainInfo, error) {
 	Common.LogDebug("正在获取域控制器地址...")
 	dcHost, err := getDomainController()
 	if err != nil {
-		Common.LogError(fmt.Sprintf("获取域控制器失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to get domain controller: %v", err))
 		return nil, fmt.Errorf("获取域控制器失败: %v", err)
 	}
 	Common.LogDebug(fmt.Sprintf("成功获取域控制器地址: %s", dcHost))
@@ -825,7 +825,7 @@ func NewDomainInfo() (*DomainInfo, error) {
 	Common.LogDebug("正在创建SSPI客户端...")
 	ldapClient, err := gssapi.NewSSPIClient()
 	if err != nil {
-		Common.LogError(fmt.Sprintf("创建SSPI客户端失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to create SSPI client: %v", err))
 		return nil, fmt.Errorf("创建SSPI客户端失败: %v", err)
 	}
 	defer ldapClient.Close()
@@ -835,7 +835,7 @@ func NewDomainInfo() (*DomainInfo, error) {
 	Common.LogDebug(fmt.Sprintf("正在连接LDAP服务器 ldap://%s:389", dcHost))
 	conn, err := ldap.DialURL(fmt.Sprintf("ldap://%s:389", dcHost))
 	if err != nil {
-		Common.LogError(fmt.Sprintf("LDAP连接失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to connect via LDAP: %v", err))
 		return nil, fmt.Errorf("LDAP连接失败: %v", err)
 	}
 	Common.LogDebug("LDAP连接建立成功")
@@ -845,7 +845,7 @@ func NewDomainInfo() (*DomainInfo, error) {
 	err = conn.GSSAPIBind(ldapClient, fmt.Sprintf("ldap/%s", dcHost), "")
 	if err != nil {
 		conn.Close()
-		Common.LogError(fmt.Sprintf("GSSAPI绑定失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to perform GSSAPI bind: %v", err))
 		return nil, fmt.Errorf("GSSAPI绑定失败: %v", err)
 	}
 	Common.LogDebug("GSSAPI绑定成功")
@@ -865,13 +865,13 @@ func NewDomainInfo() (*DomainInfo, error) {
 	result, err := conn.Search(searchRequest)
 	if err != nil {
 		conn.Close()
-		Common.LogError(fmt.Sprintf("获取defaultNamingContext失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to get defaultNamingContext: %v", err))
 		return nil, fmt.Errorf("获取defaultNamingContext失败: %v", err)
 	}
 
 	if len(result.Entries) == 0 {
 		conn.Close()
-		Common.LogError("未找到defaultNamingContext")
+		Common.LogError("defaultNamingContext not found")
 		return nil, fmt.Errorf("未找到defaultNamingContext")
 	}
 
@@ -881,7 +881,7 @@ func NewDomainInfo() (*DomainInfo, error) {
 		baseDN = getDomainDN(dcHost) // 使用备选方法
 	}
 
-	Common.LogSuccess(fmt.Sprintf("初始化完成，使用BaseDN: %s", baseDN))
+	Common.LogSuccess(fmt.Sprintf("Initialization complete, BaseDN: %s", baseDN))
 
 	return &DomainInfo{
 		conn:   conn,
@@ -895,7 +895,7 @@ func DCInfoScan(info *Common.HostInfo) (err error) {
 	Common.LogDebug("正在初始化域信息...")
 	di, err := NewDomainInfo()
 	if err != nil {
-		Common.LogError(fmt.Sprintf("初始化域信息失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to initialize domain information: %v", err))
 		return err
 	}
 	defer di.Close()
@@ -903,7 +903,7 @@ func DCInfoScan(info *Common.HostInfo) (err error) {
 	// 获取特殊计算机列表
 	specialComputers, err := di.GetSpecialComputers()
 	if err != nil {
-		Common.LogError(fmt.Sprintf("获取特殊计算机失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to get special computers: %v", err))
 	} else {
 		categories := []string{
 			"SQL服务器",
@@ -926,7 +926,7 @@ func DCInfoScan(info *Common.HostInfo) (err error) {
 	// 获取域用户
 	users, err := di.GetDomainUsers()
 	if err != nil {
-		Common.LogError(fmt.Sprintf("获取域用户失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to get domain users: %v", err))
 	} else {
 		Common.LogSuccess("[*] 域用户列表:")
 		for _, user := range users {
@@ -937,7 +937,7 @@ func DCInfoScan(info *Common.HostInfo) (err error) {
 	// 获取域管理员
 	admins, err := di.GetDomainAdmins()
 	if err != nil {
-		Common.LogError(fmt.Sprintf("获取域管理员失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to get domain admins: %v", err))
 	} else {
 		Common.LogSuccess("[*] 域管理员列表:")
 		for _, admin := range admins {
@@ -948,7 +948,7 @@ func DCInfoScan(info *Common.HostInfo) (err error) {
 	// 获取组织单位
 	ous, err := di.GetOUs()
 	if err != nil {
-		Common.LogError(fmt.Sprintf("获取组织单位失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to get organizational units: %v", err))
 	} else {
 		Common.LogSuccess("[*] 组织单位:")
 		for _, ou := range ous {
@@ -959,7 +959,7 @@ func DCInfoScan(info *Common.HostInfo) (err error) {
 	// 获取域计算机
 	computers, err := di.GetComputers()
 	if err != nil {
-		Common.LogError(fmt.Sprintf("获取域计算机失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to get domain computers: %v", err))
 	} else {
 		Common.LogSuccess("[*] 域计算机:")
 		for _, computer := range computers {
@@ -985,7 +985,7 @@ func DCInfoScan(info *Common.HostInfo) (err error) {
 	if err == nil && len(adminGroups) > 0 {
 		Common.LogSuccess("[*] 管理员组信息:")
 		for groupName, members := range adminGroups {
-			Common.LogSuccess(fmt.Sprintf("[+] %s成员:", groupName))
+			Common.LogSuccess(fmt.Sprintf("[+] Members of %s:", groupName))
 			for _, member := range members {
 				Common.LogSuccess(fmt.Sprintf("    %s", member))
 			}
@@ -1025,7 +1025,7 @@ func DCInfoScan(info *Common.HostInfo) (err error) {
 	// 获取SPN信息
 	spns, err := di.GetSPNs()
 	if err != nil {
-		Common.LogError(fmt.Sprintf("获取SPN信息失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to get SPN information: %v", err))
 	} else if len(spns) > 0 {
 		Common.LogSuccess("[*] SPN信息:")
 		for dn, spnList := range spns {

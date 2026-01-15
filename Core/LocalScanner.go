@@ -17,12 +17,12 @@ func NewLocalScanStrategy() *LocalScanStrategy {
 
 // Name 返回策略名称
 func (s *LocalScanStrategy) Name() string {
-	return "本地扫描"
+	return "Local scan"
 }
 
 // Description 返回策略描述
 func (s *LocalScanStrategy) Description() string {
-	return "收集本地系统信息"
+	return "Collect local system information"
 }
 
 // Execute 执行本地扫描策略

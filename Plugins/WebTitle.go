@@ -28,7 +28,7 @@ const (
 	httpProtocol       = "http"
 	printerFingerPrint = "打印机"
 	emptyTitle         = "\"\""
-	noTitleText        = "无标题"
+	noTitleText        = "No title"
 
 	// HTTP相关常量
 	httpPort        = "80"
@@ -40,9 +40,9 @@ const (
 
 // 错误定义
 var (
-	ErrNoTitle        = fmt.Errorf("无法获取标题")
-	ErrHTTPClientInit = fmt.Errorf("HTTP客户端未初始化")
-	ErrReadRespBody   = fmt.Errorf("读取响应内容失败")
+	ErrNoTitle        = fmt.Errorf("unable to get title")
+	ErrHTTPClientInit = fmt.Errorf("HTTP client not initialized")
+	ErrReadRespBody   = fmt.Errorf("failed to read response body")
 )
 
 // 响应结果
@@ -111,7 +111,7 @@ func initializeUrl(info *Common.HostInfo) error {
 			host := fmt.Sprintf("%s:%s", info.Host, info.Ports)
 			protocol, err := detectProtocol(host, Common.Timeout)
 			if err != nil {
-				return fmt.Errorf("协议检测失败: %w", err)
+				return fmt.Errorf("protocol detection failed: %w", err)
 			}
 			info.Url = fmt.Sprintf("%s://%s:%s", protocol, info.Host, info.Ports)
 		}
@@ -120,7 +120,7 @@ func initializeUrl(info *Common.HostInfo) error {
 		host := strings.Split(info.Url, "/")[0]
 		protocol, err := detectProtocol(host, Common.Timeout)
 		if err != nil {
-			return fmt.Errorf("协议检测失败: %w", err)
+			return fmt.Errorf("protocol detection failed: %w", err)
 		}
 		info.Url = fmt.Sprintf("%s://%s", protocol, info.Url)
 	}
@@ -216,13 +216,13 @@ func fetchUrl(targetUrl string, followRedirect bool) (*WebResponse, error) {
 	// 创建HTTP请求
 	req, err := http.NewRequest("GET", targetUrl, nil)
 	if err != nil {
-		return nil, fmt.Errorf("创建HTTP请求失败: %w", err)
+		return nil, fmt.Errorf("failed to create HTTP request: %w", err)
 	}
 
 	// 设置请求头
 	req.Header.Set("User-agent", Common.UserAgent)
 	req.Header.Set("Accept", Common.Accept)
-	req.Header.Set("Accept-Language", "zh-CN,zh;q=0.9")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
 	if Common.Cookie != "" {
 		req.Header.Set("Cookie", Common.Cookie)
 	}
@@ -279,7 +279,7 @@ func fetchUrl(targetUrl string, followRedirect bool) (*WebResponse, error) {
 	// 读取响应内容
 	body, err := readResponseBody(resp)
 	if err != nil {
-		return result, fmt.Errorf("读取响应内容失败: %w", err)
+		return result, fmt.Errorf("failed to read response body: %w", err)
 	}
 	result.Body = body
 
@@ -305,7 +305,7 @@ func readResponseBody(resp *http.Response) ([]byte, error) {
 	if resp.Header.Get(contentEncoding) == gzipEncoding {
 		gr, err := gzip.NewReader(resp.Body)
 		if err != nil {
-			return nil, fmt.Errorf("创建gzip解压器失败: %w", err)
+			return nil, fmt.Errorf("failed to create gzip reader: %w", err)
 		}
 		defer gr.Close()
 		reader = gr
@@ -314,7 +314,7 @@ func readResponseBody(resp *http.Response) ([]byte, error) {
 	// 读取内容
 	body, err := io.ReadAll(reader)
 	if err != nil {
-		return nil, fmt.Errorf("读取响应内容失败: %w", err)
+		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	return body, nil

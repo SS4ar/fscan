@@ -1,6 +1,6 @@
 module github.com/SS4ar/fscan
 
-go 1.22
+go 1.23
 
 toolchain go1.24.5
 
@@ -35,6 +35,8 @@ require (
 	gopkg.in/yaml.v2 v2.4.0
 	gopkg.in/yaml.v3 v3.0.1
 )
+
+replace github.com/shadow1ng/fscan => .
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
@@ -72,6 +74,7 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
+	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
 	golang.org/x/term v0.27.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect

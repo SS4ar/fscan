@@ -17,19 +17,19 @@ func NewServiceScanStrategy() *ServiceScanStrategy {
 
 // Name 返回策略名称
 func (s *ServiceScanStrategy) Name() string {
-	return "服务扫描"
+	return "Service scan"
 }
 
 // Description 返回策略描述
 func (s *ServiceScanStrategy) Description() string {
-	return "扫描主机服务和漏洞"
+	return "Scan host services and vulnerabilities"
 }
 
 // Execute 执行服务扫描策略
 func (s *ServiceScanStrategy) Execute(info Common.HostInfo, ch *chan struct{}, wg *sync.WaitGroup) {
 	// 验证扫描目标
 	if info.Host == "" {
-		Common.LogError("未指定扫描目标")
+		Common.LogError("No scan target specified")
 		return
 	}
 
@@ -42,7 +42,7 @@ func (s *ServiceScanStrategy) Execute(info Common.HostInfo, ch *chan struct{}, w
 	// 解析目标主机
 	hosts, err := Common.ParseIP(info.Host, Common.HostsFile, Common.ExcludeHosts)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("解析主机错误: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to parse hosts: %v", err))
 		return
 	}
 
@@ -112,7 +112,7 @@ func (s *ServiceScanStrategy) PrepareTargets(info Common.HostInfo) []Common.Host
 	// 解析目标主机
 	hosts, err := Common.ParseIP(info.Host, Common.HostsFile, Common.ExcludeHosts)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("解析主机错误: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to parse hosts: %v", err))
 		return nil
 	}
 
@@ -142,7 +142,7 @@ func (s *ServiceScanStrategy) convertToTargetInfos(ports []string, baseInfo Comm
 	for _, targetIP := range ports {
 		hostParts := strings.Split(targetIP, ":")
 		if len(hostParts) != 2 {
-			Common.LogError(fmt.Sprintf("无效的目标地址格式: %s", targetIP))
+			Common.LogError(fmt.Sprintf("Invalid target address format: %s", targetIP))
 			continue
 		}
 

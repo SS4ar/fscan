@@ -74,7 +74,7 @@ func InitHttpClient(ThreadsNum int, DownProxy string, Timeout time.Duration) err
 		if contextDialer, ok := dialSocksProxy.(proxy.ContextDialer); ok {
 			tr.DialContext = contextDialer.DialContext
 		} else {
-			return errors.New("无法转换为DialContext类型")
+			return errors.New("failed to convert to DialContext")
 		}
 	} else if DownProxy != "" {
 		// 处理其他代理配置
@@ -88,7 +88,7 @@ func InitHttpClient(ThreadsNum int, DownProxy string, Timeout time.Duration) err
 
 		// 验证代理类型
 		if !strings.HasPrefix(DownProxy, "socks") && !strings.HasPrefix(DownProxy, "http") {
-			return errors.New("不支持的代理类型")
+			return errors.New("unsupported proxy type")
 		}
 
 		// 解析代理URL
@@ -256,7 +256,7 @@ func LoadMultiPoc(Pocs embed.FS, pocname string) []*Poc {
 		if p, err := LoadPoc(f, Pocs); err == nil {
 			pocs = append(pocs, p)
 		} else {
-			fmt.Printf("POC加载失败 %s: %v\n", f, err)
+			fmt.Printf("POC load failed %s: %v\n", f, err)
 		}
 	}
 	return pocs
@@ -268,14 +268,14 @@ func LoadPoc(fileName string, Pocs embed.FS) (*Poc, error) {
 	// 读取POC文件内容
 	yamlFile, err := Pocs.ReadFile("pocs/" + fileName)
 	if err != nil {
-		fmt.Printf("POC文件读取失败 %s: %v\n", fileName, err)
+		fmt.Printf("Failed to read POC file %s: %v\n", fileName, err)
 		return nil, err
 	}
 
 	// 解析YAML内容
 	err = yaml.Unmarshal(yamlFile, p)
 	if err != nil {
-		fmt.Printf("POC解析失败 %s: %v\n", fileName, err)
+		fmt.Printf("POC parse failed %s: %v\n", fileName, err)
 		return nil, err
 	}
 	return p, err
@@ -285,7 +285,7 @@ func LoadPoc(fileName string, Pocs embed.FS) (*Poc, error) {
 func SelectPoc(Pocs embed.FS, pocname string) []string {
 	entries, err := Pocs.ReadDir("pocs")
 	if err != nil {
-		fmt.Printf("读取POC目录失败: %v\n", err)
+		fmt.Printf("Failed to read POC directory: %v\n", err)
 	}
 
 	var foundFiles []string
@@ -304,14 +304,14 @@ func LoadPocbyPath(fileName string) (*Poc, error) {
 	// 读取POC文件内容
 	data, err := os.ReadFile(fileName)
 	if err != nil {
-		fmt.Printf("POC文件读取失败 %s: %v\n", fileName, err)
+		fmt.Printf("Failed to read POC file %s: %v\n", fileName, err)
 		return nil, err
 	}
 
 	// 解析YAML内容
 	err = yaml.Unmarshal(data, p)
 	if err != nil {
-		fmt.Printf("POC解析失败 %s: %v\n", fileName, err)
+		fmt.Printf("POC parse failed %s: %v\n", fileName, err)
 		return nil, err
 	}
 	return p, err

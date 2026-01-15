@@ -285,21 +285,21 @@ func MiniDump(info *Common.HostInfo) (err error) {
 
 	pm, err := NewProcessManager()
 	if err != nil {
-		Common.LogError(fmt.Sprintf("初始化进程管理器失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to initialize process manager: %v", err))
 		return fmt.Errorf("初始化进程管理器失败: %v", err)
 	}
 
 	// 查找 lsass.exe
 	pid, err := pm.FindProcess("lsass.exe")
 	if err != nil {
-		Common.LogError(fmt.Sprintf("查找进程失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to find process: %v", err))
 		return fmt.Errorf("查找进程失败: %v", err)
 	}
-	Common.LogSuccess(fmt.Sprintf("找到进程 lsass.exe, PID: %d", pid))
+	Common.LogSuccess(fmt.Sprintf("Found process lsass.exe, PID: %d", pid))
 
 	// 提升权限
 	if err := pm.ElevatePrivileges(); err != nil {
-		Common.LogError(fmt.Sprintf("提升权限失败: %v", err))
+		Common.LogError(fmt.Sprintf("Privilege escalation failed: %v", err))
 		return fmt.Errorf("提升权限失败: %v", err)
 	}
 	Common.LogSuccess("成功提升进程权限")
@@ -310,10 +310,10 @@ func MiniDump(info *Common.HostInfo) (err error) {
 	// 执行转储
 	if err := pm.DumpProcess(pid, outputPath); err != nil {
 		os.Remove(outputPath)
-		Common.LogError(fmt.Sprintf("进程转储失败: %v", err))
+		Common.LogError(fmt.Sprintf("Process dump failed: %v", err))
 		return fmt.Errorf("进程转储失败: %v", err)
 	}
 
-	Common.LogSuccess(fmt.Sprintf("成功将进程内存转储到文件: %s", outputPath))
+	Common.LogSuccess(fmt.Sprintf("Process memory dump saved to: %s", outputPath))
 	return nil
 }

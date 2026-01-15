@@ -43,7 +43,7 @@ func MemcachedScan(info *Common.HostInfo) error {
 			},
 		}
 		Common.SaveResult(scanResult)
-		Common.LogSuccess(fmt.Sprintf("Memcached %s 未授权访问", realhost))
+		Common.LogSuccess(fmt.Sprintf("Memcached %s unauthorized access", realhost))
 	}
 
 	// 检查是否因为全局超时而退出

@@ -29,10 +29,10 @@ const (
 
 // 错误定义
 var (
-	ErrInvalidURL    = errors.New("无效的URL格式")
-	ErrEmptyTarget   = errors.New("目标URL为空")
-	ErrPocNotFound   = errors.New("未找到匹配的POC")
-	ErrPocLoadFailed = errors.New("POC加载失败")
+	ErrInvalidURL    = errors.New("invalid URL format")
+	ErrEmptyTarget   = errors.New("target URL is empty")
+	ErrPocNotFound   = errors.New("no matching POC found")
+	ErrPocLoadFailed = errors.New("POC load failed")
 )
 
 //go:embed pocs
@@ -144,7 +144,7 @@ func executePOCs(ctx context.Context, pocInfo Common.PocInfo) {
 	// 创建基础请求
 	req, err := createBaseRequest(ctx, pocInfo.Target)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("创建HTTP请求失败: %v", err))
+		Common.LogError(fmt.Sprintf("Failed to create HTTP request: %v", err))
 		return
 	}
 
@@ -169,7 +169,7 @@ func createBaseRequest(ctx context.Context, target string) (*http.Request, error
 	// 设置请求头
 	req.Header.Set("User-agent", Common.UserAgent)
 	req.Header.Set("Accept", Common.Accept)
-	req.Header.Set("Accept-Language", "zh-CN,zh;q=0.9")
+	req.Header.Set("Accept-Language", "en-US,en;q=0.9")
 	if Common.Cookie != "" {
 		req.Header.Set("Cookie", Common.Cookie)
 	}

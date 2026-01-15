@@ -32,60 +32,60 @@ func init() {
 	// 解密协议请求
 	decrypted, err := AesDecrypt(negotiateProtocolRequest_enc, key)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("协议请求解密错误: %v", err))
+		Common.LogError(fmt.Sprintf("Protocol request decrypt error: %v", err))
 		os.Exit(1)
 	}
 	negotiateProtocolRequest, err = hex.DecodeString(decrypted)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("协议请求解码错误: %v", err))
+		Common.LogError(fmt.Sprintf("Protocol request decode error: %v", err))
 		os.Exit(1)
 	}
 
 	// 解密会话请求
 	decrypted, err = AesDecrypt(sessionSetupRequest_enc, key)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("会话请求解密错误: %v", err))
+		Common.LogError(fmt.Sprintf("Session request decrypt error: %v", err))
 		os.Exit(1)
 	}
 	sessionSetupRequest, err = hex.DecodeString(decrypted)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("会话请求解码错误: %v", err))
+		Common.LogError(fmt.Sprintf("Session request decode error: %v", err))
 		os.Exit(1)
 	}
 
 	// 解密连接请求
 	decrypted, err = AesDecrypt(treeConnectRequest_enc, key)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("连接请求解密错误: %v", err))
+		Common.LogError(fmt.Sprintf("Connection request decrypt error: %v", err))
 		os.Exit(1)
 	}
 	treeConnectRequest, err = hex.DecodeString(decrypted)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("连接请求解码错误: %v", err))
+		Common.LogError(fmt.Sprintf("Connection request decode error: %v", err))
 		os.Exit(1)
 	}
 
 	// 解密管道请求
 	decrypted, err = AesDecrypt(transNamedPipeRequest_enc, key)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("管道请求解密错误: %v", err))
+		Common.LogError(fmt.Sprintf("Pipe request decrypt error: %v", err))
 		os.Exit(1)
 	}
 	transNamedPipeRequest, err = hex.DecodeString(decrypted)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("管道请求解码错误: %v", err))
+		Common.LogError(fmt.Sprintf("Pipe request decode error: %v", err))
 		os.Exit(1)
 	}
 
 	// 解密会话设置请求
 	decrypted, err = AesDecrypt(trans2SessionSetupRequest_enc, key)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("会话设置解密错误: %v", err))
+		Common.LogError(fmt.Sprintf("Session setup decrypt error: %v", err))
 		os.Exit(1)
 	}
 	trans2SessionSetupRequest, err = hex.DecodeString(decrypted)
 	if err != nil {
-		Common.LogError(fmt.Sprintf("会话设置解码错误: %v", err))
+		Common.LogError(fmt.Sprintf("Session setup decode error: %v", err))
 		os.Exit(1)
 	}
 }
@@ -157,7 +157,7 @@ func MS17010Scan(info *Common.HostInfo) error {
 	if wordCount := sessionSetupResponse[0]; wordCount != 0 {
 		byteCount := binary.LittleEndian.Uint16(sessionSetupResponse[7:9])
 		if n != int(byteCount)+45 {
-			Common.LogError(fmt.Sprintf("无效会话响应 %s:445", ip))
+			Common.LogError(fmt.Sprintf("Invalid session response %s:445", ip))
 		} else {
 			for i := 10; i < len(sessionSetupResponse)-1; i++ {
 				if sessionSetupResponse[i] == 0 && sessionSetupResponse[i+1] == 0 {
@@ -212,9 +212,9 @@ func MS17010Scan(info *Common.HostInfo) error {
 		}
 		if os != "" {
 			details["os"] = os
-			Common.LogSuccess(fmt.Sprintf("发现漏洞 %s [%s] MS17-010", ip, os))
+			Common.LogSuccess(fmt.Sprintf("Vulnerability found %s [%s] MS17-010", ip, os))
 		} else {
-			Common.LogSuccess(fmt.Sprintf("发现漏洞 %s MS17-010", ip))
+			Common.LogSuccess(fmt.Sprintf("Vulnerability found %s MS17-010", ip))
 		}
 
 		// 保存 MS17-010 漏洞结果
@@ -245,7 +245,7 @@ func MS17010Scan(info *Common.HostInfo) error {
 		}
 
 		if reply[34] == 0x51 {
-			Common.LogSuccess(fmt.Sprintf("发现后门 %s DOUBLEPULSAR", ip))
+			Common.LogSuccess(fmt.Sprintf("Backdoor found %s DOUBLEPULSAR", ip))
 
 			// 保存 DOUBLEPULSAR 后门结果
 			backdoorResult := &Common.ScanResult{

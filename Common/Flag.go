@@ -33,20 +33,20 @@ func Banner() {
 	}
 
 	// 创建边框
-	topBorder := "┌" + strings.Repeat("─", maxLength+2) + "┐"
-	bottomBorder := "└" + strings.Repeat("─", maxLength+2) + "┘"
+	topBorder := "+" + strings.Repeat("-", maxLength+2) + "+"
+	bottomBorder := "+" + strings.Repeat("-", maxLength+2) + "+"
 
 	// 打印banner
 	fmt.Println(topBorder)
 
 	for lineNum, line := range lines {
-		fmt.Print("│ ")
+		fmt.Print("| ")
 		// 使用对应的颜色打印每个字符
 		c := color.New(colors[lineNum%2])
 		c.Print(line)
 		// 补齐空格
 		padding := maxLength - len(line)
-		fmt.Printf("%s │\n", strings.Repeat(" ", padding))
+		fmt.Printf("%s |\n", strings.Repeat(" ", padding))
 	}
 
 	fmt.Println(bottomBorder)
@@ -164,12 +164,12 @@ func Flag(Info *HostInfo) {
 // FlagFormRemote 解析远程扫描的命令行参数
 func FlagFromRemote(info *HostInfo, argString string) error {
 	if strings.TrimSpace(argString) == "" {
-		return fmt.Errorf("参数为空")
+		return fmt.Errorf("empty arguments string")
 	}
 
 	args, err := parseEnvironmentArgs(argString)
 	if err != nil {
-		return fmt.Errorf("远程参数解析失败: %v", err)
+		return fmt.Errorf("failed to parse remote arguments: %v", err)
 	}
 
 	// 创建一个新的 FlagSet 用于远程参数解析，避免污染主命令行
@@ -244,7 +244,7 @@ func FlagFromRemote(info *HostInfo, argString string) error {
 
 	// 开始解析远程传入的参数
 	if err := fs.Parse(args); err != nil {
-		return fmt.Errorf("远程参数解析失败: %v", err)
+		return fmt.Errorf("failed to parse remote arguments: %v", err)
 	}
 
 	return nil
