@@ -953,7 +953,8 @@ var (
 	DisableSave   bool          // 是否禁止保存扫描结果
 	Silent        bool          // 是否启用静默模式
 	NoColor       bool          // 是否禁用彩色输出
-	LogLevel      string        // 日志输出级别
+	LogLevel      string        // Log output level
+	DebugMode     bool          // Debug mode shortcut
 	ShowProgress  bool          // 是否显示进度条
 	ShowScanPlan  bool          // 是否显示扫描计划详情
 	SlowLogOutput bool          // 是否启用慢速日志输出

@@ -13,6 +13,11 @@ import (
 // Parse 配置解析的总入口函数
 // 协调调用各解析子函数，完成完整的配置处理流程
 func Parse(Info *HostInfo) error {
+	// -debug shortcut
+	if DebugMode {
+		LogLevel = "debug"
+	}
+
 	// 按照依赖顺序解析各类配置
 	if err := ParseUser(); err != nil {
 		return fmt.Errorf("username parse error: %v", err)

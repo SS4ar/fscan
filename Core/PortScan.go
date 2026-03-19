@@ -174,6 +174,11 @@ func connectWithRetry(addr string, timeout time.Duration, maxRetries int, pool *
 
 		lastErr = err
 
+		// Debug: log every connection error
+		if attempt == 0 {
+			Common.LogDebug(fmt.Sprintf("Port closed %s: %v", addr, err))
+		}
+
 		// Only retry on resource exhaustion errors
 		if !IsResourceExhaustedError(err) {
 			return nil, err
@@ -181,6 +186,7 @@ func connectWithRetry(addr string, timeout time.Duration, maxRetries int, pool *
 
 		// Record resource exhaustion
 		pool.RecordExhausted()
+		Common.LogDebug(fmt.Sprintf("Resource exhausted on %s (attempt %d/%d): %v", addr, attempt+1, maxRetries, err))
 
 		// Exponential backoff: 50ms, 150ms
 		if attempt < maxRetries-1 {
