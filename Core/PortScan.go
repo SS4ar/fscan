@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/shadow1ng/fscan/Common"
-	"golang.org/x/sync/errgroup"
-	"golang.org/x/sync/semaphore"
 	"net"
 	"strings"
 	"sync"
@@ -13,9 +11,12 @@ import (
 	"time"
 )
 
-// EnhancedPortScan 高性能端口扫描函数
+// EnhancedPortScan performs high-performance port scanning with:
+// - SocketIterator for port spraying (evasion) and priority sorting
+// - AdaptivePool for dynamic concurrency tuning
+// - connectWithRetry for handling resource exhaustion
 func EnhancedPortScan(hosts []string, ports string, timeout int64) []string {
-	// 解析端口和排除端口
+	// Parse ports and exclusions
 	portList := Common.ParsePort(ports)
 	if len(portList) == 0 {
 		Common.LogError("Invalid port: " + ports)
@@ -27,119 +28,128 @@ func EnhancedPortScan(hosts []string, ports string, timeout int64) []string {
 		exclude[p] = struct{}{}
 	}
 
-	// 初始化并发控制
+	// Create socket iterator (port spraying + priority sorting)
+	iter := NewSocketIterator(hosts, portList, exclude)
+	totalTasks := iter.Total()
+
+	// Initialize adaptive concurrency pool
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	to := time.Duration(timeout) * time.Second
-	sem := semaphore.NewWeighted(int64(Common.ThreadNum))
+	pool := NewAdaptivePool(Common.ThreadNum)
 	var count int64
 	var aliveMap sync.Map
-	g, ctx := errgroup.WithContext(ctx)
+	var wg sync.WaitGroup
 
-	// 并发扫描所有目标
-	for _, host := range hosts {
-		for _, port := range portList {
-			if _, excluded := exclude[port]; excluded {
-				continue
-			}
-
-			host, port := host, port // 捕获循环变量
-			addr := fmt.Sprintf("%s:%d", host, port)
-
-			if err := sem.Acquire(ctx, 1); err != nil {
-				break
-			}
-
-			g.Go(func() error {
-				defer sem.Release(1)
-
-				// 连接测试
-				conn, err := net.DialTimeout("tcp", addr, to)
-				if err != nil {
-					return nil
-				}
-				defer conn.Close()
-
-				// 记录开放端口
-				atomic.AddInt64(&count, 1)
-				aliveMap.Store(addr, struct{}{})
-				Common.LogInfo("Open port " + addr)
-				Common.SaveResult(&Common.ScanResult{
-					Time: time.Now(), Type: Common.PORT, Target: host,
-					Status: "open", Details: map[string]interface{}{"port": port},
-				})
-
-				// 服务识别
-				if Common.EnableFingerprint {
-					if info, err := NewPortInfoScanner(host, port, conn, to).Identify(); err == nil {
-						// 构建结果详情
-						details := map[string]interface{}{"port": port, "service": info.Name}
-						if info.Version != "" {
-							details["version"] = info.Version
-						}
-
-						// 处理额外信息
-						for k, v := range info.Extras {
-							if v == "" {
-								continue
-							}
-							switch k {
-							case "vendor_product":
-								details["product"] = v
-							case "os", "info":
-								details[k] = v
-							}
-						}
-						if len(info.Banner) > 0 {
-							details["banner"] = strings.TrimSpace(info.Banner)
-						}
-
-						// 保存服务结果
-						Common.SaveResult(&Common.ScanResult{
-							Time: time.Now(), Type: Common.SERVICE, Target: host,
-							Status: "identified", Details: details,
-						})
-
-						// 记录服务信息
-						var sb strings.Builder
-						sb.WriteString("Service identified " + addr + " => ")
-						if info.Name != "unknown" {
-							sb.WriteString("[" + info.Name + "]")
-						}
-						if info.Version != "" {
-							sb.WriteString(" version:" + info.Version)
-						}
-
-						for k, v := range info.Extras {
-							if v == "" {
-								continue
-							}
-							switch k {
-							case "vendor_product":
-								sb.WriteString(" product:" + v)
-							case "os":
-								sb.WriteString(" os:" + v)
-							case "info":
-								sb.WriteString(" info:" + v)
-							}
-						}
-
-						if len(info.Banner) > 0 && len(info.Banner) < 100 {
-							sb.WriteString(" banner:[" + strings.TrimSpace(info.Banner) + "]")
-						}
-
-						Common.LogInfo(sb.String())
-					}
-				}
-
-				return nil
-			})
-		}
+	// Large-scale scan warning
+	if totalTasks > 100000 {
+		Common.LogInfo(fmt.Sprintf("Large-scale scan: %d targets (%d hosts × %d ports)",
+			totalTasks, len(hosts), len(portList)))
 	}
 
-	_ = g.Wait()
+	// Port spraying: iterate through SocketIterator
+	for {
+		host, port, ok := iter.Next()
+		if !ok {
+			break
+		}
 
-	// 收集结果
+		if err := pool.Acquire(ctx); err != nil {
+			break
+		}
+
+		wg.Add(1)
+		go func(host string, port int) {
+			defer func() {
+				pool.Release()
+				wg.Done()
+			}()
+
+			pool.RecordPacket()
+			addr := Common.FormatHostPort(host, port)
+
+			// Connect with retry (handles resource exhaustion)
+			conn, err := connectWithRetry(addr, to, 2, pool)
+			if err != nil {
+				return
+			}
+			defer conn.Close()
+
+			// Record open port
+			atomic.AddInt64(&count, 1)
+			aliveMap.Store(addr, struct{}{})
+			Common.LogInfo("Open port " + addr)
+			Common.SaveResult(&Common.ScanResult{
+				Time: time.Now(), Type: Common.PORT, Target: host,
+				Status: "open", Details: map[string]interface{}{"port": port},
+			})
+
+			// Service identification
+			if Common.EnableFingerprint {
+				if info, err := NewPortInfoScanner(host, port, conn, to).Identify(); err == nil {
+					// Build result details
+					details := map[string]interface{}{"port": port, "service": info.Name}
+					if info.Version != "" {
+						details["version"] = info.Version
+					}
+
+					for k, v := range info.Extras {
+						if v == "" {
+							continue
+						}
+						switch k {
+						case "vendor_product":
+							details["product"] = v
+						case "os", "info":
+							details[k] = v
+						}
+					}
+					if len(info.Banner) > 0 {
+						details["banner"] = strings.TrimSpace(info.Banner)
+					}
+
+					Common.SaveResult(&Common.ScanResult{
+						Time: time.Now(), Type: Common.SERVICE, Target: host,
+						Status: "identified", Details: details,
+					})
+
+					// Log service info
+					var sb strings.Builder
+					sb.WriteString("Service identified " + addr + " => ")
+					if info.Name != "unknown" {
+						sb.WriteString("[" + info.Name + "]")
+					}
+					if info.Version != "" {
+						sb.WriteString(" version:" + info.Version)
+					}
+
+					for k, v := range info.Extras {
+						if v == "" {
+							continue
+						}
+						switch k {
+						case "vendor_product":
+							sb.WriteString(" product:" + v)
+						case "os":
+							sb.WriteString(" os:" + v)
+						case "info":
+							sb.WriteString(" info:" + v)
+						}
+					}
+
+					if len(info.Banner) > 0 && len(info.Banner) < 100 {
+						sb.WriteString(" banner:[" + strings.TrimSpace(info.Banner) + "]")
+					}
+
+					Common.LogInfo(sb.String())
+				}
+			}
+		}(host, port)
+	}
+
+	wg.Wait()
+
+	// Collect results
 	var aliveAddrs []string
 	aliveMap.Range(func(key, _ interface{}) bool {
 		aliveAddrs = append(aliveAddrs, key.(string))
@@ -148,4 +158,36 @@ func EnhancedPortScan(hosts []string, ports string, timeout int64) []string {
 
 	Common.LogBase(fmt.Sprintf("Scan completed, found %d open ports", count))
 	return aliveAddrs
+}
+
+// connectWithRetry wraps TCP connection with retry for resource exhaustion errors.
+// Only retries on OS resource limits (too many open files, etc.), not on port-closed errors.
+func connectWithRetry(addr string, timeout time.Duration, maxRetries int, pool *AdaptivePool) (net.Conn, error) {
+	var lastErr error
+
+	for attempt := 0; attempt < maxRetries; attempt++ {
+		conn, err := net.DialTimeout("tcp", addr, timeout)
+
+		if err == nil {
+			return conn, nil
+		}
+
+		lastErr = err
+
+		// Only retry on resource exhaustion errors
+		if !IsResourceExhaustedError(err) {
+			return nil, err
+		}
+
+		// Record resource exhaustion
+		pool.RecordExhausted()
+
+		// Exponential backoff: 50ms, 150ms
+		if attempt < maxRetries-1 {
+			waitTime := time.Duration(50*(attempt+1)) * time.Millisecond
+			time.Sleep(waitTime)
+		}
+	}
+
+	return nil, lastErr
 }

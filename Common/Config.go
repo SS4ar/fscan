@@ -1,11 +1,12 @@
 package Common
 
 import (
-	"github.com/schollz/progressbar/v3"
 	"sync"
+
+	"github.com/schollz/progressbar/v3"
 )
 
-var version = "2.0.1"
+var version = "2.1.1"
 var Userdict = map[string][]string{
 	"ftp":        {"ftp", "admin", "www", "web", "root", "db", "wwwroot", "data"},
 	"mysql":      {"root", "mysql"},
@@ -925,17 +926,17 @@ var (
 	// POC与漏洞利用配置
 	// =========================================================
 	// POC配置
-	PocPath        string  // POC脚本路径
-	Pocinfo        PocInfo // POC详细信息结构
-	EnablePocScan bool //nopoc, default to true to disable POC scans
+	PocPath       string  // POC脚本路径
+	Pocinfo       PocInfo // POC详细信息结构
+	EnablePocScan bool    //nopoc, default to true to disable POC scans
 
 	// Redis利用
-	RedisFile         string // Redis利用目标文件
-	RedisShell        string // Redis反弹Shell命令
+	RedisFile         string        // Redis利用目标文件
+	RedisShell        string        // Redis反弹Shell命令
 	DisableRedis      bool   = true // 是否禁用Redis利用测试，默认禁用
-	RedisWritePath    string // Redis文件写入路径
-	RedisWriteContent string // Redis文件写入内容
-	RedisWriteFile    string // Redis写入的源文件
+	RedisWritePath    string        // Redis文件写入路径
+	RedisWriteContent string        // Redis文件写入内容
+	RedisWriteFile    string        // Redis写入的源文件
 
 	// 其他漏洞利用
 	Shellcode string // 用于MS17010等漏洞利用的Shellcode
@@ -949,16 +950,16 @@ var (
 	// =========================================================
 	// 输出与显示配置
 	// =========================================================
-	DisableSave   bool   // 是否禁止保存扫描结果
-	Silent        bool   // 是否启用静默模式
-	NoColor       bool   // 是否禁用彩色输出
-	LogLevel      string // 日志输出级别
-	ShowProgress  bool   // 是否显示进度条
-	ShowScanPlan  bool   // 是否显示扫描计划详情
-	SlowLogOutput bool   // 是否启用慢速日志输出
+	DisableSave   bool          // 是否禁止保存扫描结果
+	Silent        bool          // 是否启用静默模式
+	NoColor       bool          // 是否禁用彩色输出
+	LogLevel      string        // 日志输出级别
+	ShowProgress  bool          // 是否显示进度条
+	ShowScanPlan  bool          // 是否显示扫描计划详情
+	SlowLogOutput bool          // 是否启用慢速日志输出
 	Language      string = "en" // 界面语言设置
-	ApiAddr      string // API地址
-	SecretKey     string // 加密密钥
+	ApiAddr       string        // API地址
+	SecretKey     string        // 加密密钥
 )
 
 var (

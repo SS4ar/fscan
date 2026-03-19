@@ -89,10 +89,30 @@ func handleAliveHosts(chanHosts chan string, hostslist []string, isPing bool) {
 
 // probeWithICMP 使用ICMP方式探测
 func probeWithICMP(hostslist []string, chanHosts chan string) {
+	// 分离IPv4和IPv6主机
+	var ipv4Hosts, ipv6Hosts []string
+	for _, host := range hostslist {
+		if Common.IsIPv6(host) {
+			ipv6Hosts = append(ipv6Hosts, host)
+		} else {
+			ipv4Hosts = append(ipv4Hosts, host)
+		}
+	}
+
+	// IPv6主机使用ping方式探测（ICMPv6 raw socket需要特殊权限）
+	if len(ipv6Hosts) > 0 {
+		RunPing(ipv6Hosts, chanHosts)
+	}
+
+	// IPv4主机使用ICMP探测
+	if len(ipv4Hosts) == 0 {
+		return
+	}
+
 	// 尝试监听本地ICMP
 	conn, err := icmp.ListenPacket("ip4:icmp", "0.0.0.0")
 	if err == nil {
-		RunIcmp1(hostslist, conn, chanHosts)
+		RunIcmp1(ipv4Hosts, conn, chanHosts)
 		return
 	}
 
@@ -103,7 +123,7 @@ func probeWithICMP(hostslist []string, chanHosts chan string) {
 	conn2, err := net.DialTimeout("ip4:icmp", "127.0.0.1", 3*time.Second)
 	if err == nil {
 		defer conn2.Close()
-		RunIcmp2(hostslist, chanHosts)
+		RunIcmp2(ipv4Hosts, chanHosts)
 		return
 	}
 
@@ -112,7 +132,7 @@ func probeWithICMP(hostslist []string, chanHosts chan string) {
 	Common.LogBase(Common.GetText("switching_to_ping"))
 
 	// 降级使用ping探测
-	RunPing(hostslist, chanHosts)
+	RunPing(ipv4Hosts, chanHosts)
 }
 
 // printAliveStats 打印存活统计信息
@@ -134,42 +154,55 @@ func printAliveStats(hostslist []string) {
 	}
 }
 
-// RunIcmp1 使用ICMP批量探测主机存活(监听模式)
+// icmpRateLimit is the max ICMP packets per second (token bucket).
+// Prevents router/switch overload on large networks.
+const icmpRateLimit = 2000
+
+// RunIcmp1 uses ICMP to probe host liveness (listen mode).
+// Features: bloom filter dedup + token bucket rate limiting.
 func RunIcmp1(hostslist []string, conn *icmp.PacketConn, chanHosts chan string) {
 	endflag := false
+	bf := NewBloomFilter(len(hostslist), 0.01)
 
-	// 启动监听协程
+	// Start listener goroutine with bloom filter dedup
 	go func() {
 		for {
 			if endflag {
 				return
 			}
-			// 接收ICMP响应
 			msg := make([]byte, 100)
 			_, sourceIP, _ := conn.ReadFrom(msg)
 			if sourceIP != nil {
-				livewg.Add(1)
-				chanHosts <- sourceIP.String()
+				ip := sourceIP.String()
+				// Bloom filter dedup: skip already-seen IPs
+				if !bf.Contains(ip) {
+					bf.Add(ip)
+					livewg.Add(1)
+					chanHosts <- ip
+				}
 			}
 		}
 	}()
 
-	// 发送ICMP请求
+	// Token bucket rate limiter for ICMP sends
+	ticker := time.NewTicker(time.Second / icmpRateLimit)
+	defer ticker.Stop()
+
+	// Send ICMP requests with rate limiting
 	for _, host := range hostslist {
+		<-ticker.C // wait for token
 		dst, _ := net.ResolveIPAddr("ip", host)
 		IcmpByte := makemsg(host)
 		conn.WriteTo(IcmpByte, dst)
 	}
 
-	// 等待响应
+	// Wait for responses
 	start := time.Now()
 	for {
-		// 所有主机都已响应则退出
 		if len(AliveHosts) == len(hostslist) {
 			break
 		}
 
-		// 根据主机数量设置超时时间
 		since := time.Since(start)
 		wait := time.Second * 6
 		if len(hostslist) <= 256 {
@@ -185,9 +218,9 @@ func RunIcmp1(hostslist []string, conn *icmp.PacketConn, chanHosts chan string) 
 	conn.Close()
 }
 
-// RunIcmp2 使用ICMP并发探测主机存活(无监听模式)
+// RunIcmp2 uses ICMP concurrent probing (no-listen mode).
+// Features: rate-limited goroutine spawning.
 func RunIcmp2(hostslist []string, chanHosts chan string) {
-	// 控制并发数
 	num := 1000
 	if len(hostslist) < num {
 		num = len(hostslist)
@@ -196,9 +229,13 @@ func RunIcmp2(hostslist []string, chanHosts chan string) {
 	var wg sync.WaitGroup
 	limiter := make(chan struct{}, num)
 
-	// 并发探测
+	// Rate limit goroutine spawning for large networks
+	ticker := time.NewTicker(time.Second / icmpRateLimit)
+	defer ticker.Stop()
+
 	for _, host := range hostslist {
 		wg.Add(1)
+		<-ticker.C // rate limit
 		limiter <- struct{}{}
 
 		go func(host string) {
@@ -218,12 +255,18 @@ func RunIcmp2(hostslist []string, chanHosts chan string) {
 	close(limiter)
 }
 
-// icmpalive 检测主机ICMP是否存活
+// icmpalive 检测ICMP是否存活
 func icmpalive(host string) bool {
 	startTime := time.Now()
 
+	// 根据IP版本选择网络类型
+	network := "ip4:icmp"
+	if Common.IsIPv6(host) {
+		network = "ip6:ipv6-icmp"
+	}
+
 	// 建立ICMP连接
-	conn, err := net.DialTimeout("ip4:icmp", host, 6*time.Second)
+	conn, err := net.DialTimeout(network, host, 6*time.Second)
 	if err != nil {
 		return false
 	}
@@ -292,9 +335,14 @@ func ExecCommandPing(ip string) bool {
 	case "windows":
 		command = exec.Command("cmd", "/c", "ping -n 1 -w 1 "+ip+" && echo true || echo false")
 	case "darwin":
+		// macOS的ping同时支持IPv4和IPv6
 		command = exec.Command("/bin/bash", "-c", "ping -c 1 -W 1 "+ip+" && echo true || echo false")
 	default: // linux
-		command = exec.Command("/bin/bash", "-c", "ping -c 1 -w 1 "+ip+" && echo true || echo false")
+		if Common.IsIPv6(ip) {
+			command = exec.Command("/bin/bash", "-c", "ping6 -c 1 -w 1 "+ip+" && echo true || echo false")
+		} else {
+			command = exec.Command("/bin/bash", "-c", "ping -c 1 -w 1 "+ip+" && echo true || echo false")
+		}
 	}
 
 	// 捕获命令输出
@@ -323,7 +371,11 @@ func makemsg(host string) []byte {
 	id0, id1 := genIdentifier(host)
 
 	// 设置ICMP头部
-	msg[0] = 8                      // Type: Echo Request
+	if Common.IsIPv6(host) {
+		msg[0] = 128 // ICMPv6 Type: Echo Request
+	} else {
+		msg[0] = 8 // ICMPv4 Type: Echo Request
+	}
 	msg[1] = 0                      // Code: 0
 	msg[2] = 0                      // Checksum高位(待计算)
 	msg[3] = 0                      // Checksum低位(待计算)
@@ -382,6 +434,10 @@ func ArrayCountValueTop(arrInit []string, length int, flag bool) (arrTop []strin
 	// 统计各网段出现次数
 	segmentCounts := make(map[string]int)
 	for _, ip := range arrInit {
+		// 跳过IPv6地址，不参与网段统计
+		if Common.IsIPv6(ip) {
+			continue
+		}
 		segments := strings.Split(ip, ".")
 		if len(segments) != 4 {
 			continue

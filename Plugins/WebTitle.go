@@ -95,6 +95,12 @@ func WebTitle(info *Common.HostInfo) error {
 		}
 	}
 
+	// Favicon fingerprint scan
+	if faviconResult := FaviconScan(info.Url); faviconResult != "" {
+		Common.LogInfo(fmt.Sprintf("%-25v %s", info.Url, faviconResult))
+		info.Infostr = append(info.Infostr, faviconResult)
+	}
+
 	return err
 }
 

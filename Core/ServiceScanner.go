@@ -3,6 +3,7 @@ package Core
 import (
 	"fmt"
 	"github.com/shadow1ng/fscan/Common"
+	"net"
 	"strings"
 	"sync"
 )
@@ -140,15 +141,15 @@ func (s *ServiceScanStrategy) convertToTargetInfos(ports []string, baseInfo Comm
 	var infos []Common.HostInfo
 
 	for _, targetIP := range ports {
-		hostParts := strings.Split(targetIP, ":")
-		if len(hostParts) != 2 {
+		host, port, err := net.SplitHostPort(targetIP)
+		if err != nil {
 			Common.LogError(fmt.Sprintf("Invalid target address format: %s", targetIP))
 			continue
 		}
 
 		info := baseInfo
-		info.Host = hostParts[0]
-		info.Ports = hostParts[1]
+		info.Host = host
+		info.Ports = port
 		infos = append(infos, info)
 	}
 

@@ -42,6 +42,9 @@ func SmbScan2(info *Common.HostInfo) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(Common.GlobalTimeout)*time.Second)
 	defer cancel()
 
+	// Try anonymous/guest access first for share enumeration
+	trySmb2Anonymous(ctx, info)
+
 	// 根据是否提供哈希选择认证模式
 	if len(Common.HashBytes) > 0 {
 		return smbHashScan(ctx, info)
@@ -487,6 +490,94 @@ func logShareInfo(info *Common.HostInfo, user string, pass string, hash []byte, 
 	} else {
 		msg += fmt.Sprintf(" Pass:%s", pass)
 	}
-	msg += fmt.Sprintf(" 共享:%v", shares)
+	msg += fmt.Sprintf(" Shares:%v", shares)
 	Common.LogBase(msg)
+}
+
+// trySmb2Anonymous attempts anonymous and guest SMB2 access to enumerate shares.
+// This runs before brute-force to quickly identify open shares.
+func trySmb2Anonymous(ctx context.Context, info *Common.HostInfo) {
+	anonymousCreds := []struct {
+		user string
+		pass string
+	}{
+		{"", ""},           // null session
+		{"Guest", ""},      // guest account
+		{"anonymous", ""},  // anonymous
+	}
+
+	for _, cred := range anonymousCreds {
+		select {
+		case <-ctx.Done():
+			return
+		default:
+		}
+
+		connCtx, cancel := context.WithTimeout(ctx, time.Duration(Common.Timeout)*time.Second)
+
+		// Try connection
+		var d net.Dialer
+		conn, err := d.DialContext(connCtx, "tcp", fmt.Sprintf("%s:445", info.Host))
+		if err != nil {
+			cancel()
+			continue
+		}
+
+		initiator := smb2.NTLMInitiator{
+			User:     cred.user,
+			Password: cred.pass,
+			Domain:   "",
+		}
+
+		dialer := &smb2.Dialer{
+			Initiator: &initiator,
+		}
+
+		session, err := dialer.Dial(conn)
+		if err != nil {
+			conn.Close()
+			cancel()
+			continue
+		}
+
+		// Try to list shares
+		sharesList, err := session.ListSharenames()
+		session.Logoff()
+		conn.Close()
+		cancel()
+
+		if err != nil || len(sharesList) == 0 {
+			continue
+		}
+
+		// Found accessible shares via anonymous/guest
+		displayUser := cred.user
+		if displayUser == "" {
+			displayUser = "(null)"
+		}
+
+		var output strings.Builder
+		output.WriteString(fmt.Sprintf("SMB %s:%s anonymous access (%s)", info.Host, info.Ports, displayUser))
+		for _, share := range sharesList {
+			output.WriteString(fmt.Sprintf("\n   [->] %s", share))
+		}
+		Common.LogSuccess(output.String())
+
+		// Save result
+		result := &Common.ScanResult{
+			Time:   time.Now(),
+			Type:   Common.VULN,
+			Target: info.Host,
+			Status: "anonymous-access",
+			Details: map[string]interface{}{
+				"port":     info.Ports,
+				"service":  "smb2",
+				"username": displayUser,
+				"type":     "anonymous-access",
+				"shares":   sharesList,
+			},
+		}
+		Common.SaveResult(result)
+		return // One successful anonymous access is enough
+	}
 }

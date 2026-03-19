@@ -74,7 +74,6 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.21 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect
-	github.com/rogpeppe/go-internal v1.14.1 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
 	golang.org/x/term v0.27.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect

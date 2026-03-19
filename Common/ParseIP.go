@@ -18,6 +18,21 @@ var (
 	ErrParseIP = errors.New(GetText("parse_ip_error")) // IP解析失败的统一错误
 )
 
+// IsIPv6 检测字符串是否为IPv6地址
+// IPv6地址至少包含2个冒号（如 ::1, 2a0d:d6c0::1）
+func IsIPv6(s string) bool {
+	return strings.Count(s, ":") >= 2
+}
+
+// FormatHostPort 根据IP版本格式化 host:port 字符串
+// IPv6使用 [host]:port 格式，IPv4使用 host:port 格式
+func FormatHostPort(host string, port int) string {
+	if IsIPv6(host) {
+		return fmt.Sprintf("[%s]:%d", host, port)
+	}
+	return fmt.Sprintf("%s:%d", host, port)
+}
+
 // ParseIP 解析各种格式的IP地址
 // 参数:
 //   - host: 主机地址（可以是单个IP、IP范围、CIDR或常用网段简写）
@@ -28,13 +43,22 @@ var (
 //   - []string: 解析后的IP地址列表
 //   - error: 解析过程中的错误
 func ParseIP(host string, filename string, nohosts ...string) (hosts []string, err error) {
-	// 处理主机和端口组合的情况 (格式: IP:PORT)
-	if filename == "" && strings.Contains(host, ":") {
+	// 处理主机和端口组合的情况 (格式: IP:PORT 或 [IPv6]:PORT)
+	if filename == "" && strings.Contains(host, ":") && !IsIPv6(host) {
 		hostport := strings.Split(host, ":")
 		if len(hostport) == 2 {
 			host = hostport[0]
 			hosts = parseIPList(host)
 			Ports = hostport[1]
+			LogBase(GetText("host_port_parsed", Ports))
+		}
+	} else if filename == "" && strings.HasPrefix(host, "[") {
+		// 处理 [IPv6]:PORT 格式
+		h, p, err := net.SplitHostPort(host)
+		if err == nil {
+			host = h
+			hosts = parseIPList(host)
+			Ports = p
 			LogBase(GetText("host_port_parsed", Ports))
 		}
 	} else {
@@ -106,6 +130,15 @@ func parseIPList(ipList string) []string {
 // 返回:
 //   - []string: 解析后的IP地址列表
 func parseSingleIP(ip string) []string {
+	// 先检查是否为IPv6地址（包含2个及以上冒号）
+	if IsIPv6(ip) {
+		if testIP := net.ParseIP(ip); testIP != nil {
+			return []string{ip}
+		}
+		LogError(GetText("invalid_ip_format", ip))
+		return nil
+	}
+
 	// 检测是否包含字母（可能是域名）
 	isAlpha := regexp.MustCompile(`[a-zA-Z]+`).MatchString(ip)
 
@@ -425,8 +458,33 @@ func readIPFile(filename string) ([]string, error) {
 
 		lineCount++
 
-		// 处理IP:PORT格式
-		if strings.Contains(line, ":") {
+		// 处理IPv6地址（包含2个及以上冒号）
+		if IsIPv6(line) {
+			if strings.HasPrefix(line, "[") {
+				// 处理 [IPv6]:PORT 格式
+				host, port, err := net.SplitHostPort(line)
+				if err == nil {
+					portNum, err := strconv.Atoi(port)
+					if err == nil && portNum >= 1 && portNum <= 65535 {
+						hosts := parseIPList(host)
+						for _, h := range hosts {
+							HostPort = append(HostPort, fmt.Sprintf("[%s]:%s", h, port))
+						}
+						LogBase(GetText("parse_ip_port", line))
+					} else {
+						LogError(GetText("invalid_port", line))
+					}
+				} else {
+					LogError(GetText("invalid_ip_port_format", line))
+				}
+			} else {
+				// 纯IPv6地址，без порта
+				hosts := parseIPList(line)
+				ipList = append(ipList, hosts...)
+				LogBase(GetText("parse_ip_address", line))
+			}
+		} else if strings.Contains(line, ":") {
+			// 处理IPv4的 IP:PORT 格式
 			parts := strings.Split(line, ":")
 			if len(parts) == 2 {
 				// 提取端口部分，处理可能的注释
@@ -450,7 +508,7 @@ func readIPFile(filename string) ([]string, error) {
 				LogError(GetText("invalid_ip_port_format", line))
 			}
 		} else {
-			// 处理纯IP格式
+			// 处理纯IPv4格式
 			hosts := parseIPList(line)
 			ipList = append(ipList, hosts...)
 			LogBase(GetText("parse_ip_address", line))
